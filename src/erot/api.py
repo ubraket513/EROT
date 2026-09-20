@@ -15,8 +15,8 @@ from .types import SolverConfig, SolveResult
 from .validation import ArrayLike, validate_classical, validate_quantum
 
 Problem = Literal["classical", "quantum"]
-Regularizer = Literal["shannon", "quadratic"]
-Method = Literal["sinkhorn", "cyclic"]
+Regularizer = Literal["shannon", "quadratic", "von_neumann"]
+Method = Literal["sinkhorn", "cyclic", "dual"]
 
 
 def solve(
@@ -94,8 +94,13 @@ def solve(
                 "supported classical combinations are shannon/sinkhorn and quadratic/cyclic"
             )
     elif problem == "quantum":
-        if regularizer != "quadratic" or method != "cyclic":
-            raise ValueError("the stable quantum solver supports only quadratic/cyclic")
+        if (regularizer, method) not in (
+            ("quadratic", "cyclic"),
+            ("von_neumann", "dual"),
+        ):
+            raise ValueError(
+                "supported quantum combinations are quadratic/cyclic and von_neumann/dual"
+            )
         cost_array, marginal_arrays = validate_quantum(
             cost, marginals, config.dtype, device
         )
@@ -109,14 +114,23 @@ def solve(
         max_iterations = jax.device_put(
             jnp.asarray(config.max_iterations, dtype=jnp.int32), device
         )
-        coupling, error, iterations = quantum.quadratic_cyclic_projection(
-            cost_array,
-            marginal_arrays[0],
-            marginal_arrays[1],
-            epsilon,
-            tolerance,
-            max_iterations,
-        )
+        if regularizer == "quadratic":
+            coupling, error, iterations = quantum.quadratic_cyclic_projection(
+                cost_array,
+                marginal_arrays[0],
+                marginal_arrays[1],
+                epsilon,
+                tolerance,
+                max_iterations,
+            )
+        else:
+            from .solvers.quantum_entropy import solve_quantum_entropy
+
+            state, diagnostics = jax.jit(solve_quantum_entropy)(
+                cost_array, *marginal_arrays, epsilon, tolerance, max_iterations
+            )
+            coupling, iterations = state.coupling, diagnostics.iterations
+            error = jnp.where(diagnostics.status <= 1, diagnostics.error, jnp.inf)
     else:
         raise ValueError("problem must be 'classical' or 'quantum'")
 

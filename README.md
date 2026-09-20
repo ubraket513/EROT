@@ -6,7 +6,13 @@ quantum optimal transport. Its stable API currently provides:
 - multi-marginal log-domain Sinkhorn for Shannon-regularized classical OT;
 - two-marginal cyclic dual projection for quadratic classical OT;
 - Dykstra cyclic projection for quadratic quantum OT with general Hermitian
-  density matrices and positive-semidefinite couplings.
+  density matrices and positive-semidefinite couplings;
+- dense von Neumann entropy QOT by dual optimization for positive-definite
+  marginals, with explicit primal-dual and marginal diagnostics;
+- discrete gradient flows through PDHG and finite-epsilon Sinkhorn JKO.
+
+See [gradient-flow conventions](docs/numerics/gradient-flows.md) and
+[quantum entropy](docs/numerics/quantum-entropy.md) for objectives and limits.
 
 ## Installation
 
@@ -75,7 +81,8 @@ erot plot result.npz --output coupling.png
 ```
 
 Use `erot solve quantum` for general density matrices; quadratic regularization
-and cyclic projection are selected automatically. Solver results use `.npz`
+and cyclic projection are selected automatically. Select entropy QOT with
+`--regularizer von_neumann --method dual`. Solver results use `.npz`
 and contain the coupling, residual, iteration count, convergence flag, elapsed
 time, and JSON metadata. Plotting is optional and requires `EROT[plot]`.
 
@@ -113,5 +120,5 @@ distributions. Local reference repositories are not installation requirements.
 
 The staged integration targets Hopper-or-newer GPUs with configurable cluster
 resources and a CPU reference path. See [the roadmap](docs/superpowers/plans/2026-09-21-erot-flows-hpc-roadmap.md)
-for planned flow, quantum, and distributed capabilities; these are not claims
-about features already present in version 0.1.0.
+for implemented milestones and remaining memory/distributed work. Unchecked
+roadmap items are not claims about features already present in version 0.1.0.

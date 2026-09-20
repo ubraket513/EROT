@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: source assessment and proposed work packages; no QOTLib source has been copied, changed, or executed.
+Status: the initial assessment below is preserved as historical inspection evidence. Stage 1 subsequently executed isolated audits, and Stage 3Q implements the Q1 operators and Q2 dense entropy dual adaptation under user-confirmed Apache-2.0. See docs/numerics/qotlib-audit.md and docs/numerics/quantum-entropy.md for current evidence and limitations. Q3/Q4 remain experimental candidates.
 
 This record complements the [architecture](2026-09-21-erot-flows-hpc-design.md), [cleanup plan](../plans/2026-09-21-erot-stage-0-cleanup.md), and [roadmap](../plans/2026-09-21-erot-flows-hpc-roadmap.md). YACHT remains the engineering reference; QOTLib supplies algorithm candidates, not the destination package structure.
 

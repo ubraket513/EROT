@@ -30,7 +30,10 @@ def _add_solver_arguments(parser: argparse.ArgumentParser, problem: str) -> None
         )
         parser.add_argument("--method", choices=("sinkhorn", "cyclic"), required=True)
     else:
-        parser.set_defaults(regularizer="quadratic", method="cyclic")
+        parser.add_argument(
+            "--regularizer", choices=("quadratic", "von_neumann"), default="quadratic"
+        )
+        parser.add_argument("--method", choices=("cyclic", "dual"), default="cyclic")
     parser.add_argument("--epsilon", type=float, required=True)
     parser.add_argument("--tolerance", type=float, default=1e-8)
     parser.add_argument("--max-iterations", type=int, default=50_000)
