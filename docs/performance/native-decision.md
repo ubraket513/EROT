@@ -103,7 +103,10 @@ checks numerical convergence/objective agreement and matched science/runtime/
 hardware, requires at least seven samples, and exits one when the measurement
 gate fails (invalid input exits two). Its JSON includes SHA256 hashes of evidence
 files and the remaining interface/release checks. Source revisions may differ;
-comparison fields must match. Objective tolerances default to `atol=1e-8`,
+comparison fields must match. Both timing records must explicitly declare
+`measurement_scope: synchronized host API including validation/transfers`, the
+recognized scope emitted by `benchmark_solvers.py`. Missing, kernel-only or other
+scopes are rejected even if both reports use the same label. Objective tolerances default to `atol=1e-8`,
 `rtol=1e-6`; choose justified tighter values where the problem requires them.
 The Stage 6 distributed report has a different schema and must not be passed as
 a schema2 record or compared across device counts as a native-kernel claim.

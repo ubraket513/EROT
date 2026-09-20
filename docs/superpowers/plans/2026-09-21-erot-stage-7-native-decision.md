@@ -61,22 +61,22 @@ objective_rtol,baseline_peak=None,candidate_peak=None).
 Files: docs/performance/native-decision.md, docs/development/stage-7-validation.md,
 roadmap and support documentation.
 
-- [ ] Record current evidence: dense/blocked CPU reference agreement, bounded
+- [x] Record current evidence: dense/blocked CPU reference agreement, bounded
   compiler storage, virtual-device/process collectives and unmeasured GPU limits.
   Select JAX for the current release; no optional native operation is selected.
-- [ ] Compare the role and required evidence of ordinary JAX, Pallas Mosaic,
+- [x] Compare the role and required evidence of ordinary JAX, Pallas Mosaic,
   CUDA/C++ FFI, existing Fortran/C-ABI libraries and a larger native quantum loop.
   Use current primary documentation for version-sensitive capability statements.
-- [ ] Define target experiments: profile complete representative solves, screen
+- [x] Define target experiments: profile complete representative solves, screen
   >=30% operations with Amdahl, tune representation/JAX/library calls first,
   then compare candidates at matched precision/accuracy and total overhead.
-- [ ] For a future selected backend require stream ownership, alias/layout/error
+- [x] For a future selected backend require stream ownership, alias/layout/error
   contracts, optional installation, exact runtime/architecture matrix, fallback,
   and explicit batching/sharding/derivative support or rejection. Include the
   no-unexplained->10%-regression rule across representative workloads.
-- [ ] State quantum dense-spectral limit and cuSOLVERMp investigation separately;
+- [x] State quantum dense-spectral limit and cuSOLVERMp investigation separately;
   do not claim a distributed eigensolver or substitute an extremal eigenpair.
-- [ ] Run reporting tests, Ruff and documented CPU tool examples. Request one
+- [x] Run reporting tests, Ruff and documented CPU tool examples. Request one
   fresh final review, fix material findings, commit evidence and proceed Stage8.
 
 ## Plan self-review

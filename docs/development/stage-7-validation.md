@@ -33,3 +33,22 @@ error, batching, sharding, derivative and fallback gates. These are conditional
 requirements for a future chosen component, not tests claimed to pass for an
 unimplemented backend. C++/CUDA and existing Fortran libraries remain options
 when justified by evidence or required capability.
+
+## Final review and correction
+
+The fresh final reviewer found one important issue: timing records could declare
+kernel-only/device-core scope yet pass as full-solve results. Four regressions
+(missing, kernel-only, device-core and unknown scope, in either/both positions)
+failed before correction and pass after requiring the existing producer's exact
+`synchronized host API including validation/transfers` scope.
+Focused reporting/native checks now pass **47/47**. The complete current CPU
+suite passed **286 tests, 11 skips** in 165.91s; nine require unavailable GPUs and
+two require explicitly selected build artifacts. Raw local log:
+`/tmp/erot-stage7-final-suite.log`. No critical or minor findings remained.
+
+Review rulings: actual GPU gains stay unmeasured because hardware is unavailable
+(cost if assumed otherwise: an unsupported performance claim); native ABI/stream/
+transform tests remain conditional because no component is selected (cost if
+later skipped: an unsafe backend admission); profiler authenticity remains an
+experiment-review responsibility because declarations cannot authenticate a
+capture (cost if skipped: invalid evidence could enter a performance decision).

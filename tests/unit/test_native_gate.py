@@ -11,6 +11,7 @@ from benchmarks.reporting import COMPARISON_FIELDS
 def record(seconds=3.0):
     return {
         "schema_version": 2,
+        "measurement_scope": "synchronized host API including validation/transfers",
         "problem": "classical-shannon",
         "case_digest": "example",
         "objective_convention": "coupling-entropy-minus-mass",
@@ -114,3 +115,18 @@ def test_only_isolated_full_solve_peak_qualifies():
                 baseline_peak=peak(base, 100),
                 candidate_peak=peak(candidate, 75) | change,
             )
+
+
+@pytest.mark.parametrize("scope", [None, "kernel-only", "device-core", "full solve"])
+def test_reject_incomplete_or_unknown_timing_scope(scope):
+    candidate, baseline = record(1), record(3)
+    if scope is None:
+        candidate.pop("measurement_scope")
+    else:
+        candidate["measurement_scope"] = scope
+    with pytest.raises(ValueError, match="scope"):
+        compare_candidate(candidate, baseline)
+    with pytest.raises(ValueError, match="scope"):
+        compare_candidate(baseline, candidate)
+    with pytest.raises(ValueError, match="scope"):
+        compare_candidate(candidate, candidate)

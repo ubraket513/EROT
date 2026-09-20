@@ -82,6 +82,13 @@ def compare_candidate(
 ):
     """Check measurement admission only; ABI/platform/transform review is separate."""
     assert_comparable(candidate, baseline)
+    scope = "synchronized host API including validation/transfers"
+    if any(
+        record.get("measurement_scope") != scope for record in (candidate, baseline)
+    ):
+        raise ValueError(
+            "native admission requires full-solve measurement_scope: " + scope
+        )
     atol = _number(objective_atol, "objective_atol")
     rtol = _number(objective_rtol, "objective_rtol")
     if min(len(candidate["samples_seconds"]), len(baseline["samples_seconds"])) < 7:
