@@ -69,6 +69,8 @@ def test_sdist_excludes_local_repositories_and_generated_data(
         "LICENSES/Apache-2.0.txt",
         "NOTICE",
         "src/erot/__init__.py",
+        "examples/heat_flow.py",
+        "examples/quadratic_flow.py",
         "src/erot/experimental/classical.py",
         "tests/unit/test_api.py",
         "tests/packaging/installed_smoke.py",

@@ -68,3 +68,56 @@ Quadratic and entropy four-cell steps agree with independent CVXPY/CLARABEL
 solutions of the same objective. Rectangular resumed runs reproduce fixed
 uninterrupted work exactly. These CPU tests do not establish GPU performance,
 continuum convergence or a complete heat-equation study.
+
+## Finite-epsilon JKO
+
+`solve_entropic_jko` minimizes `F(rho)+T_epsilon(rho,previous)/(2*dt)`.
+Its density gradient uses `energy.gradient(rho)+f/(2*dt)` from the shared
+cost-unit potentials, correcting the historical factor of two. The default
+mirror step preserves positive mass; `method='sgd'` uses Euclidean simplex
+projection. Both use Armijo backtracking (at most 30 trials per update).
+Choose method statically under `jit` and set `inner_tolerance <= tolerance`.
+
+The line search uses the transport dual estimate: it is less sensitive to small
+marginal infeasibility than the approximate primal objective near stationarity.
+The reported objective remains the primal energy plus transport cost/entropy.
+Convergence requires successful inner transport, marginal/mass feasibility and
+the maximum absolute centered density gradient. Inner OT convergence alone is
+insufficient. The solver retains positive densities down to the dtype's normal
+range; extremely concentrated solutions may need higher precision or fail the
+stationarity criterion rather than silently certifying a boundary approximation.
+
+`EntropicJKOState` retains density, transport potentials, outer count, all inner
+sweeps (including rejected line-search trials) and accepted step size. Exact
+resume requires unchanged problem inputs and compatible numerical controls.
+Counter overflow is a failure, not silently wrapped work. Status 4 denotes an
+unsuccessful inner solve; status 5 denotes exhausted backtracking. Existing core
+status codes 0–3 retain their meanings. Quadratic and entropy three-cell cases
+match independent joint-coupling CVXPY references at finite epsilon.
+
+## Accepted trajectories and snapshots
+
+```python
+from erot.flows import initialize_flow, run_flow_chunk
+
+flow = initialize_flow(previous, backend="pdhg")
+chunk = run_flow_chunk(
+    flow, cost, energy, .4, 1e-8, 30000,
+    steps=4, backend="pdhg", snapshot_stride=2
+)
+```
+
+`FlowState` contains the accepted density/time, accepted and attempted counts,
+accumulated solver work, last status and complete backend state. A failed solve
+retains the previous physical density and time. An explicit retry through
+`jko_step`, or a new chunk, resumes the failed subproblem. Do not change its
+cost, energy, previous density or physical time step during that retry; create
+a new flow state for a different problem. After success, the next physical step
+creates a fresh subproblem instead of reusing incompatible PDHG corrections.
+
+A chunk stops attempting steps after a failure. Only the initial snapshot and
+every `snapshot_stride` attempted-position snapshot are allocated; pass `None`
+to omit all snapshots. Final continuation state is always returned. Repeated
+snapshot times after failure mean unchanged physical state. `steps` and stride
+are static under JAX compilation. Snapshots contain masses and times; they do
+not replace the full backend state needed for a checkpoint.

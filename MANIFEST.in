@@ -1,6 +1,7 @@
 graft src/erot
 graft tests
 graft benchmarks
+graft examples
 graft docs
 include LICENSE.txt
 include LICENSES/Apache-2.0.txt
