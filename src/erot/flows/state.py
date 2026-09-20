@@ -27,3 +27,17 @@ class JKODiagnostics(NamedTuple):
     error: jax.Array
     iterations: jax.Array
     status: jax.Array
+
+
+INNER_SOLVE_FAILED = 4
+LINE_SEARCH_FAILED = 5
+
+
+class EntropicJKOState(NamedTuple):
+    """Outer density, reusable transport potentials and cumulative work counts."""
+
+    rho: jax.Array
+    potentials: tuple[jax.Array, ...]
+    iterations: jax.Array
+    inner_iterations: jax.Array
+    step_size: jax.Array
