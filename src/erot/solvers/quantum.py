@@ -87,10 +87,16 @@ def solve_quantum_quadratic(
         valid = (
             valid
             & jnp.isfinite(matrix).all()
-            & (jnp.max(jnp.abs(matrix - matrix.conj().T)) <= input_tolerance)
+            & jnp.allclose(
+                matrix, matrix.conj().T, rtol=input_tolerance, atol=input_tolerance
+            )
         )
     for marginal in (marginal_a, marginal_b):
-        valid = valid & (jnp.abs(jnp.trace(marginal) - 1) <= input_tolerance)
+        trace = jnp.trace(marginal)
+        valid = valid & (jnp.abs(trace.imag) <= input_tolerance)
+        valid = valid & jnp.isclose(
+            trace.real, 1.0, rtol=input_tolerance, atol=input_tolerance
+        )
         valid = valid & (jnp.linalg.eigvalsh(marginal).min() >= -input_tolerance)
     identity_n = jnp.eye(n, dtype=cost.dtype)
     identity_m = jnp.eye(m, dtype=cost.dtype)
@@ -110,6 +116,7 @@ def solve_quantum_quadratic(
             valid = valid & jnp.isfinite(matrix).all()
     count = jnp.asarray(state.iterations)
     valid = valid & jnp.isfinite(count) & (count >= 0) & (count == jnp.floor(count))
+    valid = valid & (count <= 2**31 - 1) & (budget <= 2**31 - 1 - count)
     stop = count.astype(jnp.int32) + budget.astype(jnp.int32)
     valid = valid & (stop >= count)
     state = state._replace(iterations=count.astype(jnp.int32))

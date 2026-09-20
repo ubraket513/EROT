@@ -182,3 +182,38 @@ def test_adjacent_problem_warm_start_work_is_measured():
     _, cold = solve_sinkhorn(cost, adjacent, 0.2, 1e-10, 1000)
     assert warm.status == cold.status == CONVERGED
     assert warm.iterations < cold.iterations  # This specific nearby-marginal case.
+
+
+def test_iteration_controls_do_not_wrap_int32():
+    from erot.solvers import SinkhornState
+
+    cost, marginals = case()
+    for budget in (2**32, 2**32 + 1):
+        _, d = solve_sinkhorn(cost, marginals, 0.7, 1e-9, jnp.array(budget, jnp.int64))
+        assert d.status == INVALID_INPUT
+    state = SinkhornState(
+        tuple(jnp.zeros_like(a) for a in marginals), jnp.array(2**32, jnp.int64)
+    )
+    _, d = solve_sinkhorn(cost, marginals, 0.7, 1e-9, 1, state=state)
+    assert d.status == INVALID_INPUT
+
+
+def test_complex_classical_marginals_are_rejected_before_casting():
+    with pytest.raises(ValueError, match="real"):
+        solve_sinkhorn(
+            jnp.zeros((2, 2)),
+            (jnp.array([0.5 + 0.25j, 0.5 - 0.25j]), jnp.array([0.5, 0.5])),
+            0.7,
+            1e-9,
+            100,
+        )
+
+
+def test_compatibility_wrapper_does_not_hide_invalid_status():
+    from erot.classical import shannon_sinkhorn
+
+    cost = jnp.full((2, 2), 0.7 * jnp.log(4.0))
+    marginal = jnp.array([0.5, 0.5])
+    _, error, iterations = shannon_sinkhorn(cost, (marginal, marginal), 0.7, 1e-9, -1)
+    assert jnp.isinf(error)
+    assert iterations == 0

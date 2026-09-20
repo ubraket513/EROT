@@ -130,3 +130,17 @@ def test_quantum_rejects_non_psd_marginal() -> None:
             method="cyclic",
             config=_config(),
         )
+
+
+def test_host_accepted_near_unit_trace_reaches_quantum_core():
+    marginal = np.eye(2) * (1.0 + 1.5e-9) / 2
+    result = erot.solve(
+        np.zeros((4, 4)),
+        [marginal, marginal],
+        problem="quantum",
+        regularizer="quadratic",
+        method="cyclic",
+        config=erot.SolverConfig(0.7, tolerance=1e-8, device="cpu"),
+    )
+    assert result.converged
+    assert result.iterations > 0

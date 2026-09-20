@@ -75,7 +75,10 @@ def solve_sinkhorn(
     and scan, but does not promise reverse differentiation through the loop.
     """
     cost = jnp.asarray(cost)
-    marginals = tuple(jnp.asarray(a, dtype=cost.dtype) for a in marginals)
+    marginals = tuple(jnp.asarray(a) for a in marginals)
+    if any(jnp.issubdtype(a.dtype, jnp.complexfloating) for a in marginals):
+        raise ValueError("classical marginals must be real")
+    marginals = tuple(a.astype(cost.dtype) for a in marginals)
     if cost.ndim < 2 or len(marginals) != cost.ndim:
         raise ValueError("cost rank must match at least two marginals")
     if not jnp.issubdtype(cost.dtype, jnp.floating):
@@ -128,6 +131,7 @@ def solve_sinkhorn(
         jnp.asarray(0, jnp.int32) if state is None else jnp.asarray(state.iterations)
     )
     valid = valid & jnp.isfinite(count) & (count >= 0) & (count == jnp.floor(count))
+    valid = valid & (count <= 2**31 - 1) & (budget <= 2**31 - 1 - count)
     count = count.astype(jnp.int32)
     stop = count + budget.astype(jnp.int32)
     valid = valid & (stop >= count)

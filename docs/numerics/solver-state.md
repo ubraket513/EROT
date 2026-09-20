@@ -67,3 +67,9 @@ validation and restart diagnostics require additional small/dense spectral
 checks; benchmark this overhead separately from the iterative projection loop.
 The existing quantum dense wrapper uses this core without changing its result
 signature or quadratic objective.
+
+Iteration budgets and cumulative counts must fit signed int32; overflow is an
+invalid input, never wrapped work. Classical complex marginals are rejected
+before any dtype conversion. The legacy three-array solver wrappers represent
+invalid-input/numerical-failure status with infinite error so a finite initial
+residual cannot be mistaken for convergence.

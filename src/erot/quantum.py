@@ -65,4 +65,5 @@ def quadratic_cyclic_projection(
     state, diagnostics = solve_quantum_quadratic(
         cost, marginal_a, marginal_b, epsilon, tolerance, max_iterations
     )
-    return state.coupling, diagnostics.error, diagnostics.iterations
+    error = jnp.where(diagnostics.status <= 1, diagnostics.error, jnp.inf)
+    return state.coupling, error, diagnostics.iterations

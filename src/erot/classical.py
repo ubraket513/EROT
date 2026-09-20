@@ -34,7 +34,8 @@ def shannon_sinkhorn(
         cost, marginals, epsilon, tolerance, max_iterations
     )
     coupling = materialize_plan(cost, state.potentials, epsilon)
-    return coupling, diagnostics.error, diagnostics.iterations
+    error = jnp.where(diagnostics.status <= 1, diagnostics.error, jnp.inf)
+    return coupling, error, diagnostics.iterations
 
 
 def _positive_part_thresholds(z: jax.Array, targets: jax.Array) -> jax.Array:

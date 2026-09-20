@@ -68,3 +68,13 @@ def test_real_cost_keeps_complex_marginals():
     from erot.quantum import partial_trace_second
 
     np.testing.assert_allclose(partial_trace_second(state.coupling, 2, 3), a, atol=1e-9)
+
+
+def test_quantum_iteration_controls_do_not_wrap_int32():
+    cost, a, b = case()
+    _, d = solve_quantum_quadratic(cost, a, b, 0.7, 1e-9, jnp.array(2**32, jnp.int64))
+    assert d.status == INVALID_INPUT
+    state, _ = solve_quantum_quadratic(cost, a, b, 0.7, 1e-9, 0)
+    state = state._replace(iterations=jnp.array(2**32, jnp.int64))
+    _, d = solve_quantum_quadratic(cost, a, b, 0.7, 1e-9, 1, state=state)
+    assert d.status == INVALID_INPUT
