@@ -36,15 +36,15 @@ dimension. Tile access takes static block size and block indices, pads safely
 and masks positions beyond original shapes. Dense geometry is a compatibility
 adapter, not a memory-scaling claim.
 
-- [ ] Add independent NumPy tile/reference tests, rectangular nondivisible shapes,
+- [x] Add independent NumPy tile/reference tests, rectangular nondivisible shapes,
   coincident points and explicit invalid shapes/dtypes.
-- [ ] Run tests before implementation; expect missing-module failure.
-- [ ] Implement tile evaluation without forming full n*m arrays. Prefer direct
+- [x] Run tests before implementation; expect missing-module failure.
+- [x] Implement tile evaluation without forming full n*m arrays. Prefer direct
   tile differences when needed to avoid norm-expansion cancellation; account for
   tile feature dimension in memory documentation.
-- [ ] Implement streamed row/column log-sum-exp for (f_i+g_j-C_ij)/epsilon;
+- [x] Implement streamed row/column log-sum-exp for (f_i+g_j-C_ij)/epsilon;
   stable logaddexp accumulation handles all-masked blocks as -inf.
-- [ ] Verify against dense reductions for zero supports and small epsilon;
+- [x] Verify against dense reductions for zero supports and small epsilon;
   test JIT and batching. Expected all pass; commit.
 
 ## Task 2: blocked solve and explicit outputs
@@ -55,15 +55,15 @@ Consumes Task1 geometry/reductions. Returns SinkhornState and SolverDiagnostics.
 Provide solve_blocked_sinkhorn(geometry,marginals,epsilon,tolerance,max_iterations,
 *,block_size=128,state=None,warm_start=None), plan_block and apply_transport.
 
-- [ ] Add dense/blocked matched-tolerance tests with nonunit mass, nondivisible
+- [x] Add dense/blocked matched-tolerance tests with nonunit mass, nondivisible
   tiles, inactive supports, small epsilon, exact continuation and invalid input.
   Tests initially fail on missing solver.
-- [ ] Implement alternating cost-unit potential updates using streamed reductions,
+- [x] Implement alternating cost-unit potential updates using streamed reductions,
   weighted gauge, streamed marginal L1 residual and finite failure status.
   Preserve checked int32 budgets and zero-work behavior.
-- [ ] Compute objective through streamed plan tiles, using xlogy at zero; expose
+- [x] Compute objective through streamed plan tiles, using xlogy at zero; expose
   explicit block retrieval and transport application to vectors/matrices.
-- [ ] Compare output products/objectives to independent explicit dense plans;
+- [x] Compare output products/objectives to independent explicit dense plans;
   no default materialization. Run focused suite, expected pass; commit.
 
 ## Task 3: memory evidence and benchmark tools
@@ -73,13 +73,13 @@ tests/integration/test_blocked_memory.py and optional GPU checks.
 Benchmark separates compile/first-call/warm samples, synchronizes output and
 records geometry, block size, dtype, tolerance, objective, residual and device.
 
-- [ ] Inspect lowered/compiled computation for point-cloud full n*m intermediates.
+- [x] Inspect lowered/compiled computation for point-cloud full n*m intermediates.
   Use compiled memory analysis when supported and record unavailable metrics
   explicitly. CPU evidence must include two sizes with fixed tile size.
-- [ ] Add reproducible dense comparison for problems fitting memory, fixed-tile
+- [x] Add reproducible dense comparison for problems fitting memory, fixed-tile
   capacity study and configurable GPU command. Do not infer measured GPU peaks
   from compiler estimates or CPU RSS.
-- [ ] Document O((n+m)*d+n+m+tile^2*d) storage and quadratic arithmetic; include
+- [x] Document O((n+m)*d+n+m+tile^2*d) storage and quadratic arithmetic; include
   compilation workspace/runtime limitations. Link output policy and numerical
   conditioning. Run CPU benchmark; expected matched numerical results.
 
@@ -90,21 +90,21 @@ Accept geometry objects through the existing cost position for the Sinkhorn
 backend, with static transport_block_size. Array inputs retain dense behavior;
 PDHG continues to require an explicit dense cost and coupling.
 
-- [ ] Compare two accepted blocked-geometry JKO steps to dense steps at the same
+- [x] Compare two accepted blocked-geometry JKO steps to dense steps at the same
   epsilon, objective and tolerance, under JIT and nondivisible tiles. Before
   implementation expect geometry-to-array conversion failure.
-- [ ] Route geometry inputs through blocked Sinkhorn and streamed primal
+- [x] Route geometry inputs through blocked Sinkhorn and streamed primal
   objective/total transport mass. Preserve f/(2*dt), dual descent, complete
   resume and physical-time failure semantics. Promote geometry leaves together
   with state; do not create a hidden dense cost in trajectories.
-- [ ] Inspect a compiled entropic chunk for full coupling/cost shapes, test
+- [x] Inspect a compiled entropic chunk for full coupling/cost shapes, test
   inner failure keeps physical time unchanged, and reject geometry PDHG clearly.
-- [ ] Run focused tests; expected pass. Document and commit.
+- [x] Run focused tests; expected pass. Document and commit.
 
 ## Task 5: integration verification and review
 
-- [ ] Run full CPU tests and Ruff, build/install outside checkout and smoke a
+- [x] Run full CPU tests and Ruff, build/install outside checkout and smoke a
   point-cloud solve and transport application.
-- [ ] Request final fresh review and fix material findings through regressions.
-- [ ] Record actual memory evidence and outstanding real-GPU measurements;
+- [x] Request final fresh review and fix material findings through regressions.
+- [x] Record actual memory evidence and outstanding real-GPU measurements;
   mark completed software gates accurately and proceed to cluster experiments.

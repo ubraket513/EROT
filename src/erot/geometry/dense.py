@@ -34,7 +34,7 @@ class DenseGeometry(NamedTuple):
         n, m = self.shape
         rows, valid_rows = block_indices(row_start, block_size, n)
         columns, valid_columns = block_indices(column_start, block_size, m)
-        tile = self.cost[rows[:, None], columns[None, :]]
+        tile = jnp.asarray(self.cost)[rows[:, None], columns[None, :]]
         return jnp.where(valid_rows[:, None] & valid_columns[None, :], tile, jnp.inf)
 
     def transpose(self):

@@ -143,12 +143,16 @@ Stages 3F and 3Q are separate tracks after the shared core; neither requires the
 
 **Work:**
 
-- [ ] Implement block cost evaluation and stable streamed log-sum-exp accumulation for both marginal directions.
-- [ ] Handle non-divisible tiles, zero supports, all-masked tiles, and very small epsilon without converting padding to transport mass.
-- [ ] Compute residuals and objectives without materializing a full plan; offer explicit plan blocks and transport application.
-- [ ] Inspect compiled computation and measure peak live memory to prove that no hidden dense cost/coupling remains.
-- [ ] Compare dense and blocked problems at matched objective/residual tolerance and measure block choices on each available GPU profile.
-- [ ] Add separable/convolution geometry only with independent dense-equivalence tests for its metric and boundary conditions.
+- [x] Implement block cost evaluation and stable streamed log-sum-exp accumulation for both marginal directions.
+- [x] Handle non-divisible tiles, zero supports, all-masked tiles, and very small epsilon without converting padding to transport mass.
+- [x] Compute residuals and objectives without materializing a full plan; offer explicit plan blocks and transport application.
+- [x] Inspect compiled computation and CPU compiler-buffer growth: no full point-cloud cost/coupling buffers appear in the tested solves or entropic flow chunks.
+- [ ] Measure actual GPU peak live memory; tools are prepared, hardware unavailable.
+- [x] Compare dense and blocked CPU problems at matched objective/residual tolerance; record synchronized timing and memory evidence.
+- [ ] Measure block choices on target GPU profiles when hardware becomes available.
+- [x] Keep separable/convolution geometry gated on independent metric/boundary equivalence; no such path is selected or advertised in this milestone.
+
+Software implementation and CPU validation are complete; actual GPU measurements above remain unexecuted per the user's instruction to prepare validation tools. See [Stage 4 verification](../../development/stage-4-validation.md).
 
 **Exit:** memory grows according to stored geometry, potentials, and chosen tiles instead of a full `n*m` coupling for the supported point-cloud path. Generic arithmetic remains quadratic and is documented. Existing arbitrary dense and multi-marginal paths remain available with their original capacity limits.
 

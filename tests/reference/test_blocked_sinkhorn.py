@@ -155,3 +155,21 @@ def test_output_reductions_promote_explicit_potential_precision():
     expected = np.exp(-np.array([[0.0, 1.0], [1.0, 0.0]]))
     objective = transport_objective(geom, potentials, jnp.float64(1), block_size=3)
     np.testing.assert_allclose(objective, -expected.sum(), atol=1e-12)
+
+
+@pytest.mark.parametrize("kind", ["dense", "pointcloud"])
+def test_numpy_geometry_has_same_eager_and_compiled_contract(kind):
+    points = np.array([[0.0], [1.0]])
+    geom = (
+        DenseGeometry((points - points.T) ** 2)
+        if kind == "dense"
+        else PointCloudGeometry(points, points)
+    )
+    a = jnp.ones(2) / 2
+    direct, dd = solve_blocked_sinkhorn(geom, (a, a), 0.3, 1e-10, 100, block_size=3)
+    compiled, cd = jax.jit(
+        lambda g: solve_blocked_sinkhorn(g, (a, a), 0.3, 1e-10, 100, block_size=3)
+    )(geom)
+    assert dd.status == cd.status == 0
+    for left, right in zip(direct.potentials, compiled.potentials):
+        np.testing.assert_allclose(left, right, atol=1e-12)

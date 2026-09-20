@@ -33,7 +33,9 @@ class PointCloudGeometry(NamedTuple):
         rows, valid_rows = block_indices(row_start, block_size, n)
         columns, valid_columns = block_indices(column_start, block_size, m)
         # Direct differences avoid cancellation from ||x||²+||y||²-2<x,y>.
-        difference = self.x[rows, None, :] - self.y[None, columns, :]
+        difference = (
+            jnp.asarray(self.x)[rows, None, :] - jnp.asarray(self.y)[None, columns, :]
+        )
         tile = jnp.sum(difference * difference, axis=-1)
         return jnp.where(valid_rows[:, None] & valid_columns[None, :], tile, jnp.inf)
 
