@@ -113,3 +113,9 @@ Nonfinite numerical values in failed benchmark reports are JSON null, with the
 solver's failure status retained. Such reports cannot become successful matched
 comparisons. Re-run the recorded command/configuration on target hardware;
 these CPU observations do not establish Hopper performance.
+
+Entropic gradient-flow chunks accept the same geometry in their cost position
+with transport_block_size. Their transport objective and dual mass term also
+stream tiles; compiled-flow tests check the absence of full cost/coupling
+shapes. See the [flow interface](../numerics/gradient-flows.md).
+PDHG remains a dense coupling method and is not accelerated by this interface.

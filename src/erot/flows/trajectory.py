@@ -8,8 +8,9 @@ from typing import NamedTuple
 import jax
 import jax.numpy as jnp
 
+from ..geometry import DenseGeometry, PointCloudGeometry
 from ..solvers.state import CONVERGED, INVALID_INPUT, ITERATION_LIMIT
-from ._precision import cast_floating, flow_dtype
+from ._precision import as_flow_cost, cast_floating, flow_dtype, is_geometry
 from .functionals import Energy
 from .jko import solve_entropic_jko
 from .pdhg import solve_pdhg_jko
@@ -80,7 +81,7 @@ def initialize_flow(
 
 def jko_step(
     state: FlowState,
-    cost: jax.Array,
+    cost: jax.Array | DenseGeometry | PointCloudGeometry,
     energy: Energy,
     time_step: jax.Array,
     tolerance: jax.Array,
@@ -97,9 +98,11 @@ def jko_step(
     Changing problem inputs during a failed-step retry requires reinitializing
     the flow. Backend and solver method are structural choices under jit.
     """
-    cost = jnp.asarray(cost)
+    cost = as_flow_cost(cost)
+    if backend == "pdhg" and is_geometry(cost):
+        raise ValueError("PDHG requires an explicit dense cost and coupling")
     dtype = flow_dtype(cost, state.rho, energy)
-    cost = cost.astype(dtype)
+    cost = cast_floating(cost, dtype)
     state = cast_floating(state, dtype)
     if cost.shape != (state.rho.size, state.rho.size):
         raise ValueError(
@@ -175,7 +178,7 @@ def jko_step(
 
 def run_flow_chunk(
     state: FlowState,
-    cost: jax.Array,
+    cost: jax.Array | DenseGeometry | PointCloudGeometry,
     energy: Energy,
     time_step: jax.Array,
     tolerance: jax.Array,
@@ -198,9 +201,11 @@ def run_flow_chunk(
         not isinstance(snapshot_stride, int) or snapshot_stride <= 0
     ):
         raise ValueError("snapshot_stride must be a positive static integer or None")
-    cost = jnp.asarray(cost)
+    cost = as_flow_cost(cost)
+    if solver_options.get("backend", "sinkhorn") == "pdhg" and is_geometry(cost):
+        raise ValueError("PDHG requires an explicit dense cost and coupling")
     dtype = flow_dtype(cost, state.rho, energy)
-    cost = cost.astype(dtype)
+    cost = cast_floating(cost, dtype)
     state = cast_floating(state, dtype)
     size = 0 if snapshot_stride is None else 1 + steps // snapshot_stride
     snapshots = jnp.zeros((size, state.rho.size), state.rho.dtype)

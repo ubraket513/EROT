@@ -4,6 +4,16 @@
 import jax
 import jax.numpy as jnp
 
+from ..geometry import DenseGeometry, PointCloudGeometry
+
+
+def is_geometry(cost):
+    return isinstance(cost, (DenseGeometry, PointCloudGeometry))
+
+
+def as_flow_cost(cost):
+    return cost if is_geometry(cost) else jnp.asarray(cost)
+
 
 def flow_dtype(cost, rho, energy):
     arrays = [
@@ -11,7 +21,7 @@ def flow_dtype(cost, rho, energy):
         for value in jax.tree.leaves(energy)
         if hasattr(value, "dtype") and jnp.issubdtype(value.dtype, jnp.floating)
     ]
-    return jnp.result_type(cost, rho, *arrays)
+    return jnp.result_type(cost.dtype, rho, *arrays)
 
 
 def cast_floating(tree, dtype):

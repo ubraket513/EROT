@@ -128,3 +128,26 @@ to omit all snapshots. Final continuation state is always returned. Repeated
 snapshot times after failure mean unchanged physical state. `steps` and stride
 are static under JAX compilation. Snapshots contain masses and times; they do
 not replace the full backend state needed for a checkpoint.
+
+## Implicit point-cloud transport
+
+For Sinkhorn trajectories, pass PointCloudGeometry(x, x) in the cost position
+and set transport_block_size to a positive static tile side. Both the inner
+solve and primal/dual objective evaluation stream tiles; no dense cost or plan
+is created. The same finite-epsilon model, f/(2*dt) gradient, stationarity checks
+and failure/time semantics apply. DenseGeometry also supports the tiled path,
+but retains its supplied dense cost array. Array cost inputs keep the original
+dense path.
+
+    from erot.geometry import PointCloudGeometry
+    chunk = run_flow_chunk(
+        initialize_flow(previous), PointCloudGeometry(x, x), energy,
+        .3, 1e-6, 1000, epsilon=.2, steps=2, transport_block_size=64
+    )
+
+Here x is a JAX array of shape (cells, features). Precision promotion includes
+point coordinates, energies and flow state. The tile side should remain fixed
+when exact continuation is required; changing reduction order can change
+floating-point trajectories. The unregularized PDHG backend still stores its
+full coupling and requires an explicit dense cost. It rejects geometry objects
+instead of silently constructing a dense matrix.

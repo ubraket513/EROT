@@ -83,7 +83,25 @@ records geometry, block size, dtype, tolerance, objective, residual and device.
   compilation workspace/runtime limitations. Link output policy and numerical
   conditioning. Run CPU benchmark; expected matched numerical results.
 
-## Task 4: integration verification and review
+## Task 4: blocked transport in entropic gradient flows
+
+Files: src/erot/flows/{jko,trajectory,_precision}.py and flow integration tests.
+Accept geometry objects through the existing cost position for the Sinkhorn
+backend, with static transport_block_size. Array inputs retain dense behavior;
+PDHG continues to require an explicit dense cost and coupling.
+
+- [ ] Compare two accepted blocked-geometry JKO steps to dense steps at the same
+  epsilon, objective and tolerance, under JIT and nondivisible tiles. Before
+  implementation expect geometry-to-array conversion failure.
+- [ ] Route geometry inputs through blocked Sinkhorn and streamed primal
+  objective/total transport mass. Preserve f/(2*dt), dual descent, complete
+  resume and physical-time failure semantics. Promote geometry leaves together
+  with state; do not create a hidden dense cost in trajectories.
+- [ ] Inspect a compiled entropic chunk for full coupling/cost shapes, test
+  inner failure keeps physical time unchanged, and reject geometry PDHG clearly.
+- [ ] Run focused tests; expected pass. Document and commit.
+
+## Task 5: integration verification and review
 
 - [ ] Run full CPU tests and Ruff, build/install outside checkout and smoke a
   point-cloud solve and transport application.

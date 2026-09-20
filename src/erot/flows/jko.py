@@ -7,9 +7,13 @@ import jax
 import jax.numpy as jnp
 from jax.scipy.special import xlogy
 
+from ..geometry import DenseGeometry, PointCloudGeometry
+from ..geometry.plan import transport_objective
+from ..geometry.reductions import streamed_logsumexp
 from ..solvers import SinkhornWarmStart, materialize_plan, solve_sinkhorn
+from ..solvers.blocked_sinkhorn import solve_blocked_sinkhorn
 from ..solvers.state import CONVERGED, INVALID_INPUT, ITERATION_LIMIT, NUMERICAL_FAILURE
-from ._precision import cast_floating, flow_dtype
+from ._precision import as_flow_cost, cast_floating, flow_dtype, is_geometry
 from .functionals import Energy
 from .state import (
     INNER_SOLVE_FAILED,
@@ -29,7 +33,7 @@ def _simplex_projection(values, mass):
 
 
 def solve_entropic_jko(
-    cost: jax.Array,
+    cost: jax.Array | DenseGeometry | PointCloudGeometry,
     previous: jax.Array,
     energy: Energy,
     time_step: jax.Array,
@@ -42,6 +46,7 @@ def solve_entropic_jko(
     learning_rate: jax.Array = 1.0,
     method: str = "mirror",
     state: EntropicJKOState | None = None,
+    transport_block_size: int = 128,
 ) -> tuple[EntropicJKOState, JKODiagnostics]:
     """Minimize F(rho)+T_epsilon(rho,previous)/(2*dt) at fixed positive mass.
 
@@ -49,16 +54,17 @@ def solve_entropic_jko(
     backtracking and f/(2*dt) from cost-unit Sinkhorn potentials. Method is static
     under jit. An unconverged inner transport solve is an explicit failure.
     Resume requires the identical problem and numerical controls. This dense
-    implementation materializes plans for objective evaluation.
+    array path materializes plans; geometry inputs use bounded transport tiles.
     """
     if method not in ("mirror", "sgd"):
         raise ValueError("method must be 'mirror' or 'sgd'")
-    cost, previous = jnp.asarray(cost), jnp.asarray(previous)
-    if cost.ndim != 2 or previous.shape != (cost.shape[1],):
+    cost, previous = as_flow_cost(cost), jnp.asarray(previous)
+    blocked = is_geometry(cost)
+    if (not blocked and cost.ndim != 2) or previous.shape != (cost.shape[1],):
         raise ValueError("cost columns must match the previous mass vector")
     if not jnp.issubdtype(cost.dtype, jnp.floating) or jnp.iscomplexobj(previous):
         raise ValueError("entropic JKO requires real floating cost and real masses")
-    cost = cost.astype(flow_dtype(cost, previous, energy))
+    cost = cast_floating(cost, flow_dtype(cost, previous, energy))
     previous = previous.astype(cost.dtype)
     if state is not None:
         state = cast_floating(state, cost.dtype)
@@ -69,7 +75,7 @@ def solve_entropic_jko(
     budget, inner_budget = jnp.asarray(max_iterations), jnp.asarray(inner_iterations)
     mass = previous.sum()
     valid = (
-        jnp.isfinite(cost).all()
+        (cost.is_valid() if blocked else jnp.isfinite(cost).all())
         & jnp.isfinite(previous).all()
         & (previous >= 0).all()
         & (mass > 0)
@@ -130,21 +136,31 @@ def solve_entropic_jko(
         return jnp.where(fits, total + additional, total), fits
 
     def evaluate(rho, potentials):
-        transport, diag = solve_sinkhorn(
+        solver = solve_blocked_sinkhorn if blocked else solve_sinkhorn
+        options = {"block_size": transport_block_size} if blocked else {}
+        transport, diag = solver(
             cost,
             (rho, previous),
             eps,
             inner_tol,
             inner_budget,
             warm_start=SinkhornWarmStart(potentials),
+            **options,
         )
-        plan = materialize_plan(cost, transport.potentials, eps)
-        ot = jnp.sum(cost * plan) + eps * jnp.sum(xlogy(plan, plan) - plan)
+        if blocked:
+            ot = transport_objective(cost, transport.potentials, eps, **options)
+            plan_mass = jnp.sum(
+                jnp.exp(streamed_logsumexp(cost, *transport.potentials, eps, **options))
+            )
+        else:
+            plan = materialize_plan(cost, transport.potentials, eps)
+            ot = jnp.sum(cost * plan) + eps * jnp.sum(xlogy(plan, plan) - plan)
+            plan_mass = jnp.sum(plan)
         objective = energy.value(rho) + ot / (2 * dt)
         dual_ot = (
             jnp.dot(rho, transport.potentials[0])
             + jnp.sum(previous * jnp.where(previous > 0, transport.potentials[1], 0.0))
-            - eps * jnp.sum(plan)
+            - eps * plan_mass
         )
         descent_objective = energy.value(rho) + dual_ot / (2 * dt)
         gradient = energy.gradient(rho) + transport.potentials[0] / (2 * dt)
