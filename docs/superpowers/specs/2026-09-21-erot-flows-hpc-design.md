@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: proposed specification for review; implementation has not started.
+Status: Stage 0 foundation implemented and independently reviewed; later stages follow this specification. See [validation evidence](../../development/stage-0-validation.md).
 
 This specification records the direction agreed in the discussion on 2026-09-21. The target includes both large individual solves and many independent experiments. The latest hardware direction is NVIDIA Hopper or newer, with configurable resources for an openly shared library; it supersedes the earlier fixed GPU/CPU allocation. The user selected `ubraket513/YACHT` as the engineering reference, added QOTLib as an algorithm source to assess, and requested repository cleanup and restructuring before numerical integration.
 

@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: proposed staged delivery plan; no implementation stage has been executed.
+Status: Stage 0 completed and independently reviewed; Stage 1 is in progress. See [Stage 0 evidence](../../development/stage-0-validation.md).
 
 **Goal:** first clean and restructure EROT, then integrate gradient flows and selected QOTLib algorithms into an openly shareable scientific library for independent experiments and large solves. Target Hopper-or-newer NVIDIA GPUs with configurable resources, preserve a CPU path, and keep SDPLab independent.
 
@@ -216,7 +216,7 @@ Stages 3F and 3Q are separate tracks after the shared core; neither requires the
 **Work:**
 
 - [ ] Document supported objectives, derivative support, precision modes, capacity limits, and actual GPU/distributed validation. Separate validated configurations from experimental and untested hardware.
-- [ ] Verify clean wheel/sdist installation and execute the documented CPU examples and CLI workflows.
+- [ ] Verify clean wheel/sdist installation and execute documented CPU examples and CLI workflows. Extend automated content inspection to both direct and sdist-derived wheels (Stage 0 review follow-up).
 - [ ] Publish reproducible benchmark configurations and clearly separate measurements from extrapolations.
 - [ ] Provide migration mappings from `jko_lab` into `erot.flows` and adopted QOTLib components into EROT, with scientific behavior changes, source revisions, reuse rights, and attribution recorded.
 - [ ] Remove redundant imported code only after every retained capability and historical source is accounted for; treat repository relocation and remote changes as separate explicit operations.

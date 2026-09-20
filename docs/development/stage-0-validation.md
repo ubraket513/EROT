@@ -60,6 +60,20 @@ dependency, and native-backend claims remain outside this CPU verification.
 
 ## Next stage
 
+An independent read-only review found no Critical or Important issues. It
+verified the archived bytes/hashes, unchanged runtime modules and moved tests,
+and artifact inspection. Both current wheels were independently inspected.
+A minor follow-up is to automate content inspection for the direct wheel too;
+the current automated content check selects the sdist-derived wheel, while
+both wheels already receive isolated installation smoke tests. Stage 8 owns
+that additional release check.
+
+Implementation decisions: use an isolated local worktree without changing
+`main`; use existing behavior checks for mechanical moves and new regression
+tests for changed version behavior. Remote CI execution, actual GPU/distributed
+measurements, minimum dependency combinations, and deeper scientific audits
+were not certified by this structural review.
+
 Stage 1 adds independent mathematical contracts and historical flow/QOTLib
 audits. Source import rights are recorded as Apache-2.0 for both projects,
 per the user's confirmation. No QOTLib or gradient-flow algorithm was imported
