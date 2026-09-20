@@ -33,22 +33,22 @@ Files: tests/packaging/test_distributions.py, tests/packaging/installed_smoke.py
 pyproject.toml, MANIFEST.in, requirements/base-minimum.txt,
 .github/workflows/runTest.yml.
 
-- [ ] Add parametrized direct/rebuilt wheel inspection. Read optional
+- [x] Add parametrized direct/rebuilt wheel inspection. Read optional
   EROT_DIRECT_DIST_DIR alongside required EROT_DIST_DIR; when supplied require
   exactly one wheel and apply the same content/license/entry-point assertions.
   Demonstrate RED using an invalid direct wheel, then GREEN using fresh builds.
-- [ ] Require integrated flow/geometry/quantum/distributed package files, all
+- [x] Require integrated flow/geometry/quantum/distributed package files, all
   five console scripts, version/license metadata, and shipped examples/HPC
   configs/docs in artifacts. Retain exclusions for archived/nested/generated data.
-- [ ] Set authoritative version0.2.0 and include changelog in sdist. Keep alpha
+- [x] Set authoritative version0.2.0 and include changelog in sdist. Keep alpha
   status for the research release; no native backend is selected.
-- [ ] Run base minimum Python3.11/JAX0.4.30/NumPy1.26.4 in an isolated environment;
+- [x] Run base minimum Python3.11/JAX0.4.30/NumPy1.26.4 in an isolated environment;
   pin compatible SciPy/ml-dtypes test dependencies. Run numerical/core/worker
   tests excluding explicitly newer distributed runtime. Fix real incompatibility
   or change supported bounds with evidence, never silently skip base failures.
-- [ ] CI separates minimum CPU, current CPU and pinned experimental distributed
+- [x] CI separates minimum CPU, current CPU and pinned experimental distributed
   checks, and inspects both wheel flavors. No self-hosted GPU job assumed.
-- [ ] Extend base-only installed smoke to integrated flow/entropy-QOT and console
+- [x] Extend base-only installed smoke to integrated flow/entropy-QOT and console
   availability; execute outside checkout with -I and no optional optimizer/plot/
   reference packages. Commit verified packaging/compatibility changes.
 

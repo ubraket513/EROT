@@ -42,6 +42,25 @@ jobs:
           name: coverage-${{ matrix.python-version }}
           path: coverage.xml
 
+  minimum-cpu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install declared base compatibility floor
+        run: >-
+          python -m pip install -c requirements/base-minimum.txt
+          '.[test,plot]' 'cvxpy==1.6.5' 'pytest==8.3.5'
+      - name: Base numerical and workflow tests (distributed uses a newer runtime)
+        env:
+          JAX_PLATFORMS: cpu
+        run: >-
+          python -m pytest tests/unit tests/reference tests/integration
+          --ignore=tests/unit/test_distributed_checkpoint.py
+          --ignore-glob='tests/integration/test_distributed*'
+
   workflow:
     runs-on: ubuntu-latest
     steps:
@@ -49,7 +68,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install '.[test,plot]'
+      - run: python -m pip install -r requirements/distributed-cpu.txt '.[test,plot]'
       - name: CLI and data workflows
         env:
           JAX_PLATFORMS: cpu
@@ -70,6 +89,7 @@ jobs:
       - name: Inspect distribution contents
         env:
           EROT_DIST_DIR: dist
+          EROT_DIRECT_DIST_DIR: dist/direct
         run: python -m pytest tests/packaging
       - name: Verify both wheels in clean base-only environments
         env:

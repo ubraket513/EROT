@@ -12,11 +12,16 @@ import sysconfig
 import tempfile
 from pathlib import Path
 
+import jax
+import jax.numpy as jnp
 import numpy as np
 
 import erot
 import erot.experimental.classical
+from erot.flows import Quadratic, initialize_flow, run_flow_chunk
+from erot.geometry.pointcloud import PointCloudGeometry
 from erot.io import load_result
+from erot.solvers.blocked_sinkhorn import solve_blocked_sinkhorn
 
 
 def run_cli(*args: str, cwd: Path) -> dict[str, object]:
@@ -38,17 +43,18 @@ def main() -> None:
     for optional in ("matplotlib", "cvxpy", "flax", "optax"):
         assert importlib.util.find_spec(optional) is None, optional
 
-    console = Path(sysconfig.get_path("scripts")) / (
-        "erot.exe" if os.name == "nt" else "erot"
-    )
-    help_result = subprocess.run(
-        [str(console), "--help"],
-        check=True,
-        capture_output=True,
-        text=True,
-        timeout=60,
-    )
-    assert "solve" in help_result.stdout
+    for name in ("erot", "erot-run", "erot-launch", "erot-array", "erot-distributed"):
+        console = Path(sysconfig.get_path("scripts")) / (
+            name + ".exe" if os.name == "nt" else name
+        )
+        help_result = subprocess.run(
+            [str(console), "--help"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        assert "usage:" in help_result.stdout
 
     mass = np.array([0.25, 0.75])
     result = erot.solve(
@@ -61,6 +67,43 @@ def main() -> None:
     )
     assert result.converged
     np.testing.assert_allclose(result.coupling, np.outer(mass, mass), atol=1e-8)
+
+    # Integrated API checks require only the base distribution.
+    x = jnp.array([[0.0], [0.5], [1.0]])
+    rho = jnp.array([0.2, 0.5, 0.3])
+    geometry = PointCloudGeometry(x, x)
+    _, diagnostic = jax.jit(
+        lambda: solve_blocked_sinkhorn(
+            geometry, (rho, rho), 0.2, 1e-8, 10000, block_size=2
+        )
+    )()
+    assert int(diagnostic.status) == 0
+    assert float(diagnostic.error) <= 1e-8
+    flow = run_flow_chunk(
+        initialize_flow(rho, backend="pdhg"),
+        (x[:, 0, None] - x[None, :, 0]) ** 2,
+        Quadratic(jnp.array([0.5, 0.2, 0.3]), weight=3.0),
+        0.4,
+        1e-8,
+        30000,
+        steps=1,
+        backend="pdhg",
+    )
+    assert int(flow.state.status) == 0
+    assert int(flow.state.accepted_steps) == 1
+    np.testing.assert_allclose(flow.state.rho.sum(), 1.0, atol=1e-7)
+    assert not np.allclose(flow.state.rho, rho)
+    density = np.diag(mass)
+    quantum = erot.solve(
+        np.zeros((4, 4)),
+        [density, density],
+        problem="quantum",
+        regularizer="von_neumann",
+        method="dual",
+        config=erot.SolverConfig(epsilon=1.0, device="cpu"),
+    )
+    assert quantum.converged
+    np.testing.assert_allclose(quantum.coupling, np.kron(density, density), atol=1e-7)
 
     with tempfile.TemporaryDirectory(prefix="erot-installed-workflow-") as directory:
         cwd = Path(directory)

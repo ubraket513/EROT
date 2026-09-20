@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import configparser
 import os
 import tarfile
 import zipfile
+from email.parser import Parser
 from pathlib import Path, PurePosixPath
 
 import pytest
@@ -24,11 +26,45 @@ def artifacts() -> tuple[Path, Path]:
     return wheels[0], sources[0]
 
 
-def test_wheel_contains_only_package_and_distribution_metadata(
-    artifacts: tuple[Path, Path],
-) -> None:
-    with zipfile.ZipFile(artifacts[0]) as wheel:
+@pytest.fixture(params=["rebuilt", "direct"])
+def wheel_path(request, artifacts):
+    if request.param == "rebuilt":
+        return artifacts[0]
+    configured = os.environ.get("EROT_DIRECT_DIST_DIR")
+    if configured is None:
+        pytest.skip("set EROT_DIRECT_DIST_DIR to inspect the direct wheel")
+    wheels = list(Path(configured).resolve().glob("*.whl"))
+    assert len(wheels) == 1, wheels
+    return wheels[0]
+
+
+def test_wheel_contains_only_package_and_distribution_metadata(wheel_path) -> None:
+    with zipfile.ZipFile(wheel_path) as wheel:
         names = set(wheel.namelist())
+        metadata = Parser().parsestr(
+            wheel.read(
+                next(name for name in names if name.endswith(".dist-info/METADATA"))
+            ).decode()
+        )
+        scripts = configparser.ConfigParser()
+        scripts.read_string(
+            wheel.read(
+                next(
+                    name
+                    for name in names
+                    if name.endswith(".dist-info/entry_points.txt")
+                )
+            ).decode()
+        )
+    assert metadata["License-Expression"] == "MIT AND Apache-2.0"
+    assert metadata["Requires-Python"] == ">=3.11"
+    assert dict(scripts["console_scripts"]) == {
+        "erot": "erot.cli:main",
+        "erot-run": "erot.experiments:main",
+        "erot-launch": "erot.launcher:main",
+        "erot-array": "erot.slurm:main",
+        "erot-distributed": "erot.distributed:main",
+    }
     assert {
         "erot/__init__.py",
         "erot/__main__.py",
@@ -36,6 +72,17 @@ def test_wheel_contains_only_package_and_distribution_metadata(
         "erot/classical.py",
         "erot/quantum.py",
         "erot/cli.py",
+        "erot/flows/__init__.py",
+        "erot/geometry/pointcloud.py",
+        "erot/operators/quantum.py",
+        "erot/solvers/quantum_entropy.py",
+        "erot/solvers/distributed_sinkhorn.py",
+        "erot/runtime/checkpoint.py",
+        "erot/runtime/distributed_checkpoint.py",
+        "erot/experiments.py",
+        "erot/launcher.py",
+        "erot/slurm.py",
+        "erot/distributed.py",
         "erot/experimental/__init__.py",
         "erot/experimental/classical.py",
     } <= names
@@ -65,12 +112,23 @@ def test_sdist_excludes_local_repositories_and_generated_data(
         }
     assert {
         "pyproject.toml",
+        "CHANGELOG.md",
+        "docs/migration-0.2.md",
+        "docs/support-matrix.md",
+        "requirements/base-minimum.txt",
         "LICENSE.txt",
         "LICENSES/Apache-2.0.txt",
         "NOTICE",
         "src/erot/__init__.py",
         "examples/heat_flow.py",
         "examples/quadratic_flow.py",
+        "examples/quantum_entropy.py",
+        "hpc/run_array.sbatch",
+        "hpc/run_distributed.sbatch",
+        "hpc/distributed_rank.sh",
+        "experiments/configs/distributed-classical.json",
+        "requirements/distributed-cpu.txt",
+        "docs/performance/native-decision.md",
         "src/erot/experimental/classical.py",
         "tests/unit/test_api.py",
         "tests/packaging/installed_smoke.py",

@@ -1,0 +1,8 @@
+# Base CPU compatibility floor, Python 3.11.15; not distributed mode.
+# Install EROT separately with --no-deps after these runtime constraints.
+jax==0.4.30
+jaxlib==0.4.30
+numpy==1.26.4
+scipy==1.12.0
+ml-dtypes==0.4.1
+opt-einsum==3.3.0

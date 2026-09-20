@@ -10,6 +10,7 @@ include LICENSE.txt
 include LICENSES/Apache-2.0.txt
 include NOTICE
 include CONTRIBUTING.md
+include CHANGELOG.md
 include ruff.toml
 prune archive
 prune numerical-gradient-flows
