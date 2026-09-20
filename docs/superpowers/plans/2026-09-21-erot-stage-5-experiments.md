@@ -38,16 +38,16 @@ publishes LATEST only after data/manifest are flushed. load_checkpoint(path,
 expected_metadata) verifies schema, hashes, array shapes/dtypes and compatible
 metadata before reconstructing whitelisted named tuple states.
 
-- [ ] Write round-trip tests for FlowState (both backends), Sinkhorn and quantum
+- [x] Write round-trip tests for FlowState (both backends), Sinkhorn and quantum
   states, including complex arrays and integer counters.
-- [ ] Write incompatible-config/topology/dtype and truncated/corrupt/incomplete
+- [x] Write incompatible-config/topology/dtype and truncated/corrupt/incomplete
   generation tests. Initial run must fail on missing module.
-- [ ] Encode array leaves in non-pickle npz and tree structure in JSON with
+- [x] Encode array leaves in non-pickle npz and tree structure in JSON with
   explicit known-state registry. Include schema, checksums and required identity
   metadata. Use temporary generation, fsync, rename, then atomic latest pointer.
-- [ ] Simulate interruption before pointer publication; the old checkpoint must
+- [x] Simulate interruption before pointer publication; the old checkpoint must
   remain loadable. Reject unknown schemas/types and invalid hashes.
-- [ ] Run focused tests, expected pass; commit.
+- [x] Run focused tests, expected pass; commit.
 
 ## Task 2: run identity and installed chunked worker
 
@@ -60,18 +60,18 @@ step, tolerances, dtype, output policy and total work/steps are recorded.
 A canonical scientific configuration digest plus trial label identifies a run;
 output location and deliberate stop-after-chunks control do not change identity.
 
-- [ ] Add uninterrupted versus one-chunk/checkpoint/resume tests, comparing full
+- [x] Add uninterrupted versus one-chunk/checkpoint/resume tests, comparing full
   state and final scientific output. Add changed-config rejection and numerical
   failure records. Run before implementation, expected missing worker.
-- [ ] Generate inputs deterministically; record input/geometry digest, seed and
+- [x] Generate inputs deterministically; record input/geometry digest, seed and
   RNG state, source-code digest/revision when available, runtime versions and
   selected device/topology. Use a per-run ownership lock to prevent collisions.
-- [ ] Run finite chunks, synchronize before saving, checkpoint complete solver
+- [x] Run finite chunks, synchronize before saving, checkpoint complete solver
   state and physical time. Save requested snapshots separately. On failed solve,
   persist state and explicit reason; do not advance accepted physical time.
-- [ ] Provide installed erot-run entry point and repository wrapper. Support
+- [x] Provide installed erot-run entry point and repository wrapper. Support
   resume and deliberate stop-after-chunks for restart validation.
-- [ ] Run CPU examples and installed worker smoke, expected reproducible;
+- [x] Run CPU examples and installed worker smoke, expected reproducible;
   commit.
 
 ## Task 3: resource-aware independent workers
@@ -81,27 +81,27 @@ launcher subcommand, hpc/run_array.sbatch, hpc/profiles/*.json, launcher tests.
 Parent must avoid initializing JAX devices. Assign one visible GPU token per
 worker and disjoint CPU affinity subsets; all resource choices are recorded.
 
-- [ ] Test one/two CPU workers produce independent identities/results, and reject
+- [x] Test one/two CPU workers produce independent identities/results, and reject
   more workers/threads/devices than allocation. Test resource-plan construction
   with supplied GPU UUID tokens without needing hardware.
-- [ ] Derive affinity from os.sched_getaffinity and respect scheduler/explicit
+- [x] Derive affinity from os.sched_getaffinity and respect scheduler/explicit
   budgets. Set OMP/OpenBLAS/MKL thread limits and worker affinity before numerical
   backend use. Record actual observed affinity, not only requested counts.
-- [ ] Launch workers using fresh subprocesses; isolate outputs/logs by run id.
+- [x] Launch workers using fresh subprocesses; isolate outputs/logs by run id.
   Preserve full failure exit status. Add aggregation of scientific output
   separately from execution timing.
-- [ ] Add configurable Slurm array template and profile examples without site
+- [x] Add configurable Slurm array template and profile examples without site
   account/model constraints. Site sbatch resource flags remain external inputs.
-- [ ] Run one/two-worker CPU smoke and collision/restart tests; commit.
+- [x] Run one/two-worker CPU smoke and collision/restart tests; commit.
 
 ## Task 4: throughput tools, documentation and review
 
-- [ ] Record startup, compilation/first chunk, subsequent chunks and checkpoint
+- [x] Record startup, compilation/first chunk, subsequent chunks and checkpoint
   overhead separately in each run. Measure one/two CPU worker throughput in
   isolated runs; prepare equivalent GPU commands with unmeasured labels.
-- [ ] Document schema, supported workloads, exact-restart compatibility,
+- [x] Document schema, supported workloads, exact-restart compatibility,
   checkpoint ownership, resource assumptions and HPC launch commands.
-- [ ] Run full CPU suite, Ruff, package/build/install and installed worker
+- [x] Run full CPU suite, Ruff, package/build/install and installed worker
   round-trip. Request one final fresh review; fix material findings with
   regression tests and a green suite.
-- [ ] Commit verification evidence and continue Stage 6 distributed solves.
+- [x] Commit verification evidence and continue Stage 6 distributed solves.

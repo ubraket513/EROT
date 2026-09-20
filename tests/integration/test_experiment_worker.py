@@ -121,3 +121,22 @@ def test_supported_workloads_report_scientific_metrics(tmp_path, kind, backend, 
     report = run_experiment(c, tmp_path)
     assert report["status"] == "completed"
     assert np.isfinite(report["scientific"][metric])
+
+
+def test_flow_timing_tracks_static_count_and_state_specializations(tmp_path):
+    report = run_experiment(
+        config(backend="pdhg", steps=7, chunk_size=2, max_iterations=20000), tmp_path
+    )
+    assert report["status"] == "completed"
+    events = [
+        json.loads(line)
+        for line in (tmp_path / "timing.jsonl").read_text().splitlines()
+    ]
+    assert len(events) == 4
+    # Middle chunks repeat the same signature; final count=1 is a new variant.
+    assert ["compile_and_execute_seconds" in event for event in events] == [
+        True,
+        False,
+        False,
+        True,
+    ]

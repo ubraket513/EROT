@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: Stage 0 completed and independently reviewed; Stage 1 is in progress. See [Stage 0 evidence](../../development/stage-0-validation.md).
+Status: Stages 0–5 software and CPU validation are complete and independently reviewed. Stage 6 is next; actual GPU/Slurm gates remain unexecuted. See the stage validation documents under docs/development.
 
 **Goal:** first clean and restructure EROT, then integrate gradient flows and selected QOTLib algorithms into an openly shareable scientific library for independent experiments and large solves. Target Hopper-or-newer NVIDIA GPUs with configurable resources, preserve a CPU path, and keep SDPLab independent.
 
@@ -164,12 +164,14 @@ Software implementation and CPU validation are complete; actual GPU measurements
 
 **Work:**
 
-- [ ] Define schema-versioned run configurations and unique experiment identity; record seeds, input identity, source/runtime versions, dtype, and output policy.
-- [ ] Implement chunked execution, atomic checkpoints, interrupted-run recovery, and validation against incompatible restart input.
-- [ ] Start one worker per allocated GPU by default; derive CPU/thread budgets from scheduler affinity and explicit resource configuration. Reject oversubscribed settings.
-- [ ] Provide configurable Hopper-or-newer profiles without hard-coded accounts, GPU counts, CPU limits, personal paths, or assumptions about peer links. The old two-GPU/16-core allocation is only an example.
-- [ ] Store logs and results per run; aggregate scientific results separately from numerical execution.
-- [ ] Measure job throughput including startup/compilation and checkpoint overhead. Only batch same-shape trials when beneficial.
+- [x] Define schema-versioned run configurations and unique experiment identity; record seeds, input identity, source/runtime versions, dtype, and output policy.
+- [x] Implement chunked execution, atomic checkpoints, interrupted-run recovery, and validation against incompatible restart input.
+- [x] Start one worker per allocated GPU by default; derive CPU/thread budgets from scheduler affinity and explicit resource configuration. Reject oversubscribed settings.
+- [x] Provide configurable Hopper-or-newer profiles without hard-coded accounts, GPU counts, CPU limits, personal paths, or assumptions about peer links. The old two-GPU/16-core allocation is only an example.
+- [x] Store logs and results per run; aggregate scientific results separately from numerical execution.
+- [x] Measure job throughput including startup/compilation and checkpoint overhead. Only batch same-shape trials when beneficial.
+
+Software and CPU validation are complete; see [Stage 5 evidence](../../development/stage-5-validation.md). GPU throughput and actual Slurm execution remain unmeasured; configurable tools are prepared.
 
 **Exit:** one- and two-worker smoke cases are independent and reproducible, interruption/resume matches uninterrupted output within tolerance, and no output collisions or CPU oversubscription occur. Worker configuration supports larger allocations; claim measured throughput only for tested counts. Experiment throughput is evaluated separately from one-problem scaling.
 

@@ -66,8 +66,8 @@ objective and convergence diagnostics. Nonfinite values are JSON null with
 failure status retained. State arrays remain in the checkpoint rather than
 being dumped into console JSON.
 
-timing.jsonl records each published chunk's first-call compile-and-execute or
-subsequent execution time, plus checkpoint time. Worker setup includes backend,
+timing.jsonl records each published chunk's first-specialization compile-and-execute or
+repeated-specialization execution time, plus checkpoint time. Worker setup includes backend,
 input generation and initial-state work. Parent-process throughput measurements
 also include interpreter/import startup. A crash immediately after checkpoint
 publication can leave a missing timing event; numerical restart remains valid,
@@ -116,7 +116,7 @@ problem sizes before recommending concurrency. A larger throughput can trade
 against per-experiment latency. These commands prepare GPU validation and do
 not imply it has run.
 
-Each report separates first-chunk compile-and-execute, subsequent execution,
+Each report separates first-specialization compile-and-execute, repeated execution,
 checkpoint duration, worker setup and process wall time. Outside-worker-session
 time includes interpreter/import startup and exit; it is not a pure import
 microbenchmark. Lifetime chunk timing coverage must contain exactly one valid
@@ -125,3 +125,8 @@ duplicate, malformed or truncated events mark the measurement incomplete.
 Scientific completion remains separate from this timing audit. Measurements
 include fresh compilation for each subprocess and checkpoint overhead, so they
 measure end-to-end experiment throughput rather than warmed kernel throughput.
+
+Compilation signatures include flow static chunk length and state tree/shape/dtype/
+weak-type metadata. A shorter final flow chunk is a new specialization, even
+after earlier chunks have run. The combined field includes first-call overhead
+and execution; persistent compilation caches can reduce its compilation cost.

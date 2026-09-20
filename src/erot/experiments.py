@@ -130,6 +130,7 @@ def run_experiment(
             state, chunks, last_status = workload.initial, 0, 1
         setup_seconds = time.perf_counter() - start
         session_chunks = 0
+        seen_signatures = set()
         last_diagnostics = None
         status = "checkpointed"
         while True:
@@ -150,6 +151,17 @@ def run_experiment(
                 status = "completed" if config["kind"] == "flow" else "failed"
                 break
             count = min(config["chunk_size"], target - completed)
+            leaves, structure = jax.tree.flatten(state)
+            signature = (
+                count if config["kind"] == "flow" else None,
+                structure,
+                tuple(
+                    (leaf.shape, str(leaf.dtype), getattr(leaf, "weak_type", False))
+                    for leaf in leaves
+                ),
+            )
+            first_specialization = signature not in seen_signatures
+            seen_signatures.add(signature)
             before = time.perf_counter()
             state, diagnostics, values, times = jax.block_until_ready(
                 workload.chunk(state, count)
@@ -180,8 +192,9 @@ def run_experiment(
                 "chunk": chunks,
                 "first_chunk_in_process": session_chunks == 1,
                 "compile_and_execute_seconds"
-                if session_chunks == 1
+                if first_specialization
                 else "execute_seconds": chunk_seconds,
+                "first_specialization_in_process": first_specialization,
                 "checkpoint_seconds": checkpoint_seconds,
                 "generation": generation.name,
                 "status": last_status,
