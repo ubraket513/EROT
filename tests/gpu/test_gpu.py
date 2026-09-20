@@ -80,3 +80,38 @@ def test_cpu_gpu_quantum_entropy_agreement(dtype, tolerance):
     np.testing.assert_allclose(
         results[0].coupling, results[1].coupling, atol=5 * tolerance
     )
+
+
+@pytest.mark.gpu
+@pytest.mark.skipif(not GPU_AVAILABLE, reason="CUDA-enabled JAX is unavailable")
+@pytest.mark.parametrize(("dtype", "tolerance"), [("float64", 1e-8), ("float32", 1e-5)])
+def test_cpu_gpu_blocked_transport_agreement(dtype, tolerance):
+    from functools import partial
+
+    from erot.geometry import PointCloudGeometry
+    from erot.geometry.plan import apply_transport
+    from erot.solvers.blocked_sinkhorn import solve_blocked_sinkhorn
+
+    jax.config.update("jax_enable_x64", dtype == "float64")
+    x, y = (
+        np.linspace(0, 1, 5, dtype=dtype)[:, None],
+        np.linspace(0, 1, 7, dtype=dtype)[:, None],
+    )
+    a, b = np.full(5, 0.2, dtype=dtype), np.full(7, 1 / 7, dtype=dtype)
+    results = []
+    for platform in ("cpu", "gpu"):
+        device = jax.devices(platform)[0]
+        geometry = PointCloudGeometry(
+            jax.device_put(x, device), jax.device_put(y, device)
+        )
+        marginals = (jax.device_put(a, device), jax.device_put(b, device))
+        state, diag = jax.jit(partial(solve_blocked_sinkhorn, block_size=4))(
+            geometry, marginals, 0.2, tolerance, 10000
+        )
+        assert int(diag.status) == 0
+        assert state.potentials[0].devices() == {device}
+        result = apply_transport(
+            geometry, state.potentials, 0.2, jax.device_put(y, device), block_size=4
+        )
+        results.append(np.asarray(result))
+    np.testing.assert_allclose(*results, atol=5 * tolerance)
