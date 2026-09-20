@@ -20,3 +20,13 @@ stable entropy proximal evaluation, the full coupled-operator PDHG step bound,
 stationarity/feasibility diagnostics, exact resume state, and integration with
 EROT's shared optimal-transport core. See docs/architecture/source-provenance.md
 and the numerical audit documents for scope and mathematical corrections.
+
+Quantum operators under src/erot/operators/quantum.py are distributed under
+Apache-2.0. Their mathematical contracts follow QOTLib by Pavlo Pelikh:
+https://github.com/Pavlo3P/QOTLib
+Revision: bd534c61aeae082892b9b2421db153beb8e5c804
+Reference paths: qotlib/qot/_constraint_op.py,
+qotlib/regularization/_reg_sdp.py, qotlib/regularization/regs/entropy.py.
+The user confirmed Apache-2.0 reuse rights on 2026-09-21; the inspected checkout
+contained no LICENSE or NOTICE. EROT adaptations provide unequal bipartite
+dimensions, explicit tensor/adjoint conventions and shifted spectral recovery.

@@ -68,3 +68,17 @@ root solve instead of the historical overflow-prone Lambert-W expression.
 Functionals use explicit nonnegative cell masses and volume-aware entropy.
 The original checkout remains unchanged. QOTLib algorithm adaptation is still
 a subsequent stage, with separate attribution required when added.
+
+## Stage 3Q operator adoption
+
+The quantum operator contracts in src/erot/operators/quantum.py follow QOTLib
+qotlib/qot/_constraint_op.py and spectral recovery in
+qotlib/regularization/{_reg_sdp.py,regs/entropy.py}, at the pinned revision
+bd534c61aeae082892b9b2421db153beb8e5c804. Git records Pavlo Pelikh as the source
+author. User-confirmed Apache-2.0 permission and attribution are preserved in
+NOTICE. This is a compact JAX adaptation, not an import of QOTLib's backend,
+space or optimizer abstractions. Unlike the source's equal-dimension problem
+wrapper, the operators expose two arbitrary positive subsystem dimensions.
+Tests use independent index loops and complex Hilbert-Schmidt identities.
+Gibbs recovery shifts the spectrum before exponentiation and exposes the
+log partition separately; normalization alone makes no marginal claim.
