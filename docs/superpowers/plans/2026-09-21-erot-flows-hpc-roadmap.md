@@ -87,13 +87,13 @@ Stages 3F and 3Q are separate tracks after the shared core; neither requires the
 
 **Work:**
 
-- [ ] Define PyTree state and array-valued diagnostics, separating warm starts, exact resume state, and results.
-- [ ] Extract the existing multi-marginal Sinkhorn iteration and return cost-unit potentials, status, iterations, and residuals.
-- [ ] Add a warm-start input and documented gauge; test zero-support marginals and changed epsilon.
-- [ ] Separate plan evaluation/materialization from the solve result. Keep the public dense wrapper behavior.
-- [ ] Ensure host validation and scalar conversion do not occur inside device computation; preserve explicitly supplied array placement.
-- [ ] Test `jit`, `vmap`, and a short `scan` of related solves, without claiming reverse-mode differentiation through a dynamic convergence loop.
-- [ ] Compare dense CPU/GPU numerical outputs with Stage 1 references and preserve two-marginal, rectangular, and multi-marginal support.
+- [x] Define PyTree state and array-valued diagnostics, separating warm starts, exact resume state, and results.
+- [x] Extract the existing multi-marginal Sinkhorn iteration and return cost-unit potentials, status, iterations, and residuals.
+- [x] Add a warm-start input and documented gauge; test zero-support marginals and changed epsilon.
+- [x] Separate plan evaluation/materialization from the solve result. Keep the public dense wrapper behavior.
+- [x] Ensure host validation and scalar conversion do not occur inside device computation; preserve explicitly supplied array placement.
+- [x] Test `jit`, `vmap`, and a short `scan` of related solves, without claiming reverse-mode differentiation through a dynamic convergence loop.
+- [x] Compare dense CPU outputs with Stage 1 references; prepare optional GPU agreement/placement tests (hardware unavailable) and preserve two-marginal, rectangular, and multi-marginal support.
 
 **Interface:** downstream flows receive potentials and diagnostics from one shared core. Numerical parameters remain dynamic where practical; shape and algorithm choices that change compilation are documented. Failure is a device status, not hidden NaNs or an untraceable Python exception.
 

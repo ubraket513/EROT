@@ -22,8 +22,9 @@ which have no status field. No Critical findings were reported.
 The final CPU suite reports **98 passed, 5 skipped**: three GPU checks and two
 opt-in distribution-content checks. Ruff passes the runtime, test and benchmark
 scopes. A built wheel was installed into a fresh base-only environment and its
-API/CLI workflow exercised outside the checkout; the final review fixes are
-rebuilt and rechecked before closing the milestone. Source checkouts and SDPLab
+API/CLI workflow exercised outside the checkout; the final review fixes were
+rebuilt/reinstalled, and both the API/CLI smoke and an independent zero-cost
+quantum-state smoke passed outside the checkout. Source checkouts and SDPLab
 remain outside this change.
 
 No actual GPU placement, throughput, multi-device performance or declared

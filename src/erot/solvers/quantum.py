@@ -48,8 +48,7 @@ def solve_quantum_quadratic(
     """Project -C/epsilon onto PSD matrices with prescribed partial traces.
 
     Inputs are finite Hermitian arrays, with PSD trace-one marginals. The device
-    core checks finiteness, Hermiticity, traces and controls; the host API also
-    validates marginal PSD. Budget is additional sweeps. Corrections cannot be
+    core checks finiteness, Hermiticity, marginal PSD, traces and controls. Budget is additional sweeps. Corrections cannot be
     reused for a changed problem. No host conversions or synchronization occur.
     """
     cost = jnp.asarray(cost)

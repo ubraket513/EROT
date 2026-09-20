@@ -4,6 +4,8 @@ Execute inline using `superpowers:executing-plans`. The user already authorized
 implementation, local commits and subsequent stages. Hardware runs remain
 unavailable; prepare optional GPU checks and keep CPU evidence explicit.
 
+**Status:** implemented and reviewed on CPU. See [verification](../../development/stage-2-validation.md). Actual GPU checks remain unexecuted.
+
 ## Contract and implementation decisions
 
 Preserve `erot.solve`, `SolverConfig`, dense `SolveResult`, CLI and
@@ -37,50 +39,50 @@ scalability before that change. No reverse-mode claim through `lax.while_loop`.
 
 ## Task 1: state, pure Sinkhorn and numerical regression
 
-- [ ] Add `src/erot/solvers/state.py`, `sinkhorn.py`, and `__init__.py`.
-- [ ] Write tests first for independent rectangular objective/coupling agreement,
+- [x] Add `src/erot/solvers/state.py`, `sinkhorn.py`, and `__init__.py`.
+- [x] Write tests first for independent rectangular objective/coupling agreement,
   multi-marginal zero support/non-unit mass, cost-unit potential derivative,
   gauge, changed-epsilon warm starts, zero/one budgets, nonfinite input/status,
   and exact resumed sweeps versus uninterrupted sweeps.
-- [ ] Implement cyclic log-domain updates using other-axis potentials directly;
+- [x] Implement cyclic log-domain updates using other-axis potentials directly;
   avoid subtracting -infinity for inactive support. Normalize gauge at each
   sweep so resume and uninterrupted operations have identical arithmetic.
-- [ ] Separate plan materialization; do not retain a dense coupling in state.
-- [ ] Run focused tests and the existing independent numerical references.
+- [x] Separate plan materialization; do not retain a dense coupling in state.
+- [x] Run focused tests and the existing independent numerical references.
 
 ## Task 2: transformations and compatibility integration
 
-- [ ] Write `jit`, mixed-convergence `vmap`, and short related-problem `scan`
+- [x] Write `jit`, mixed-convergence `vmap`, and short related-problem `scan`
   tests. Include adjacent-marginal warm-start work measurement without requiring
   every warm start to save iterations.
-- [ ] Replace only the existing Shannon wrapper implementation with a call to
+- [x] Replace only the existing Shannon wrapper implementation with a call to
   the core and explicit materialization. Preserve its three-array result.
-- [ ] Keep validated host conversion separate. For `device='auto'`, preserve a
+- [x] Keep validated host conversion separate. For `device='auto'`, preserve a
   single explicitly placed input device when all supplied JAX arrays agree;
   reject ambiguous multi-device arrays at the host API with guidance to the
   pure API. An explicitly requested device remains authoritative.
-- [ ] Reject nonfinite config scalars at the host boundary; maintain existing
+- [x] Reject nonfinite config scalars at the host boundary; maintain existing
   positive-iteration host contract while the device core supports zero work.
-- [ ] Document dynamic parameters, status codes, gauge and resume identity.
-- [ ] Run compatibility/CLI tests and CPU references; add opt-in GPU placement
+- [x] Document dynamic parameters, status codes, gauge and resume identity.
+- [x] Run compatibility/CLI tests and CPU references; add opt-in GPU placement
   coverage, recording its skip until hardware is available.
 
 ## Task 3: quantum quadratic resume
 
-- [ ] Add `src/erot/solvers/quantum.py` with the complete Dykstra coupling and
+- [x] Add `src/erot/solvers/quantum.py` with the complete Dykstra coupling and
   three corrections plus cumulative count. Do not warm-start corrections across
   a changed problem. Preserve dense quantum wrapper output.
-- [ ] Test exact resumed versus uninterrupted sweeps on complex unequal local
+- [x] Test exact resumed versus uninterrupted sweeps on complex unequal local
   dimensions, then run existing PSD/marginal/CVXPY references.
-- [ ] Explicitly distinguish quantum resume from a snapshot of the coupling.
+- [x] Explicitly distinguish quantum resume from a snapshot of the coupling.
 
 ## Task 4: review and handoff
 
-- [ ] Run the full suite, Ruff checks, installed smoke appropriate to new modules,
+- [x] Run the full suite, Ruff checks, installed smoke appropriate to new modules,
   and inspect the diff for accidental SDPLab or historical-source changes.
-- [ ] Commit important milestones locally. Request the execution skill's fresh
+- [x] Commit important milestones locally. Request the execution skill's fresh
   final review, fix material findings, record deferred minor observations.
-- [ ] Refine Stage 3F against these actual APIs and proceed without asking again.
+- [x] Refine Stage 3F against these actual APIs and proceed without asking again.
 
 Acceptance: existing dense results remain numerically compatible; state resumes
 correctly; warm starts converge under the same mathematical contract; composed
