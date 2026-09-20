@@ -76,12 +76,12 @@ docs/development.md, docs/architecture/source-provenance.md.
 
 Files: docs/development/stage-8-validation.md, roadmap, relevant fixes.
 
-- [ ] Build fresh direct wheel and sdist-derived wheel; inspect both; install
+- [x] Build fresh direct wheel and sdist-derived wheel; inspect both; install
   each in separate clean base-only environments and run installed_smoke.py.
-- [ ] Copy all documented example scripts and supplied experiment configurations
+- [x] Copy all documented example scripts and supplied experiment configurations
   outside checkout; run heat_flow, quadratic_flow, quantum_entropy, installed
   worker and launcher resume smoke. Record scientific outcomes, not exit alone.
-- [ ] Run full current CPU/reference/integration suite, minimum suite, Ruff and
+- [x] Run full current CPU/reference/integration suite, minimum suite, Ruff and
   all artifact checks. Record explicit GPU/artifact skips, never as passes.
 - [ ] Obtain one fresh final review for Stage8, reproduce/fix material findings,
   then rerun affected checks/full suite as warranted and commit.

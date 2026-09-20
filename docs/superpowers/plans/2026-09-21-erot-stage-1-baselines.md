@@ -359,7 +359,7 @@ Expected: versioned records with seven warm samples, consistent objectives/outco
 **Interfaces:** consumes an available Hopper-or-newer allocation and the reporting helpers; produces a configurable hardware profile and a keep-JAX / native-capability / structured-research decision for required quantum sizes. No fixed model, GPU count, or CPU budget is a library-wide assumption.
 
 - [ ] **Record allocation and topology before benchmarking.** Record GPU architecture/variant, usable memory, topology, CPU affinity, host RAM, driver/runtime, sharing/MIG if present, interconnect, and process mapping. Do not infer usable VRAM or peer links from a model name. Profile one GPU, then two equivalent GPUs if available; additional counts are explicit experiments. Derive worker/thread budgets from actual allocated resources. The earlier 16-core allocation is only an example profile.
-- [ ] **Separate support from optimization.** Record validated, experimental, and untested architecture/runtime combinations. Pallas Mosaic is now a candidate for the target GPU family, but each selected kernel still requires dtype/architecture tests and a JAX fallback. Do not fabricate coverage for unavailable successor GPUs.
+- [x] **Separate support from optimization.** Record validated, experimental, and untested architecture/runtime combinations. Pallas Mosaic is now a candidate for the target GPU family, but each selected kernel still requires dtype/architecture tests and a JAX fallback. Do not fabricate coverage for unavailable successor GPUs.
 
 - [ ] **Use a bounded initial workload ladder.**
 

@@ -68,6 +68,10 @@ the current automated content check selects the sdist-derived wheel, while
 both wheels already receive isolated installation smoke tests. Stage 8 owns
 that additional release check.
 
+Resolved in Stage8: both direct and sdist-derived wheels now use the same
+automated content checks via EROT_DIRECT_DIST_DIR and EROT_DIST_DIR, including
+a deliberately contaminated direct-wheel regression.
+
 Implementation decisions: use an isolated local worktree without changing
 `main`; use existing behavior checks for mechanical moves and new regression
 tests for changed version behavior. Remote CI execution, actual GPU/distributed
