@@ -8,6 +8,13 @@ Flow inputs are cell masses, not density samples. Convert densities using
 domain and value, gradient and Euclidean proximal maps. They are JAX PyTrees;
 no Flax/Optax dependency is required.
 
+Solvers promote floating state to the common dtype of cost, masses and array
+energy parameters before entering compiled loops. This includes trajectory
+snapshots and continuation state. Enable JAX x64 explicitly when float64 is
+required; promotion does not change the global precision configuration.
+Entropy evaluates logarithms separately to avoid overflowing mass/volume
+ratios. Zero-weight entropy has zero derivative, including at zero mass.
+
 ## Unregularized PDHG JKO
 
 ```python
@@ -54,8 +61,8 @@ work count and status are arrays. No post-solve normalization conceals errors.
 `PDHGState` includes duals, coupling, density, extrapolated coupling/density and
 cumulative work. Resume only the identical subproblem and step parameters using
 `state=`; budget is additional work. Changing the physical previous density
-requires a new subproblem. This pure solver does not yet advance physical time;
-the trajectory layer will accept a density only after a successful subproblem.
+requires a new subproblem. This pure solver does not advance physical time;
+the trajectory layer accepts a density only after a successful subproblem.
 
 Entropy prox solves `x + alpha*log(x/volume) = z` in log coordinates without
 forming `exp(z/alpha)`. Alpha zero projects onto the nonnegative domain.

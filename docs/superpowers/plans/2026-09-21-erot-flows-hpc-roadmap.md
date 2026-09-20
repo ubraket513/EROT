@@ -107,13 +107,13 @@ Stages 3F and 3Q are separate tracks after the shared core; neither requires the
 
 **Work:**
 
-- [ ] Port the Sinkhorn JKO outer iteration onto the shared core and apply the independently verified cost/potential normalization.
-- [ ] Provide entropy, potential, and quadratic functionals with explicit value/gradient/prox capabilities and cell-volume conventions.
-- [ ] Consolidate PDHG into one device implementation. Verify the norm of the actual coupled operator, step-size bound, extrapolation semantics, and positive mass handling.
-- [ ] Validate entropy prox using its scalar optimality equation over extreme inputs; use a stable method instead of overflowing `exp(z/alpha)`.
-- [ ] Retain the initial SGD option using JAX operations; keep alternate optimizers optional if added. Do not force optimizer objects or Flax into the base API.
-- [ ] Return flow state, accepted-step count, physical time, inner work, mass/constraint errors, and failure reason. Expose snapshots independently from full solver checkpoints.
-- [ ] Test unregularized and entropic JKO against their own reference objectives; verify failed inner steps do not silently advance time.
+- [x] Port the Sinkhorn JKO outer iteration onto the shared core and apply the independently verified cost/potential normalization.
+- [x] Provide entropy, potential, and quadratic functionals with explicit value/gradient/prox capabilities and cell-volume conventions.
+- [x] Consolidate PDHG into one device implementation. Verify the norm of the actual coupled operator, step-size bound, extrapolation semantics, and positive mass handling.
+- [x] Validate entropy prox using its scalar optimality equation over extreme inputs; use a stable method instead of overflowing `exp(z/alpha)`.
+- [x] Retain the initial SGD option using JAX operations; keep alternate optimizers optional if added. Do not force optimizer objects or Flax into the base API.
+- [x] Return flow state, accepted-step count, physical time, inner work, mass/constraint errors, and failure reason. Expose snapshots independently from full solver checkpoints.
+- [x] Test unregularized and entropic JKO against their own reference objectives; verify failed inner steps do not silently advance time.
 
 **Interface:** `jko_step` evolves one state; a chunk runner executes a fixed number of steps with explicit output selection. Inputs include the energy, geometry, time step, backend, numerical tolerances, and optional compatible state. Native acceleration is not needed to ship this interface.
 

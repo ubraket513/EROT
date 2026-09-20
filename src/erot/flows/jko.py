@@ -9,6 +9,7 @@ from jax.scipy.special import xlogy
 
 from ..solvers import SinkhornWarmStart, materialize_plan, solve_sinkhorn
 from ..solvers.state import CONVERGED, INVALID_INPUT, ITERATION_LIMIT, NUMERICAL_FAILURE
+from ._precision import cast_floating, flow_dtype
 from .functionals import Energy
 from .state import (
     INNER_SOLVE_FAILED,
@@ -57,7 +58,10 @@ def solve_entropic_jko(
         raise ValueError("cost columns must match the previous mass vector")
     if not jnp.issubdtype(cost.dtype, jnp.floating) or jnp.iscomplexobj(previous):
         raise ValueError("entropic JKO requires real floating cost and real masses")
+    cost = cost.astype(flow_dtype(cost, previous, energy))
     previous = previous.astype(cost.dtype)
+    if state is not None:
+        state = cast_floating(state, cost.dtype)
     dt, eps, tol, inner_tol, rate = (
         jnp.asarray(x, cost.dtype)
         for x in (time_step, epsilon, tolerance, inner_tolerance, learning_rate)

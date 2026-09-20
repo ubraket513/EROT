@@ -37,17 +37,15 @@ class Entropy(NamedTuple):
         )
 
     def value(self, rho):
-        value = jnp.where(
-            self.weight == 0,
-            0.0,
-            self.weight * jnp.sum(xlogy(rho, rho / self.volumes) - rho),
+        active_rho = jnp.where(self.weight == 0, jnp.ones_like(rho), rho)
+        value = self.weight * jnp.sum(
+            xlogy(rho, active_rho) - rho * jnp.log(self.volumes) - rho
         )
         return jnp.where(self.is_valid() & (rho >= 0).all(), value, jnp.inf)
 
     def gradient(self, rho):
-        return jnp.where(
-            self.weight == 0, 0.0, self.weight * jnp.log(rho / self.volumes)
-        )
+        active_rho = jnp.where(self.weight == 0, jnp.ones_like(rho), rho)
+        return self.weight * (jnp.log(active_rho) - jnp.log(self.volumes))
 
     def prox(self, z, alpha):
         return entropy_prox(z, alpha * self.weight, self.volumes)

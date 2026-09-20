@@ -68,3 +68,21 @@ def test_energy_objects_are_transformable_pytrees():
     energy = Entropy(jnp.array([0.2, 0.8]))
     got = jax.jit(lambda e, r: e.value(r))(energy, jnp.array([0.4, 0.6]))
     assert np.isfinite(got)
+
+
+@pytest.mark.parametrize("mass,volume", [(1e100, 1e-300), (1e-100, 1e300)])
+def test_entropy_extreme_log_ratios_stay_finite(mass, volume):
+    energy = Entropy(jnp.array([volume]))
+    rho = jnp.array([mass])
+    expected = np.log(mass) - np.log(volume)
+    np.testing.assert_allclose(energy.gradient(rho), [expected], rtol=1e-14)
+    assert float(energy.value(rho)) == pytest.approx(
+        mass * (expected - 1), rel=1e-14, abs=0.0
+    )
+
+
+def test_zero_weight_entropy_has_zero_autodiff_at_zero_mass():
+    energy = Entropy(jnp.array([0.1, 0.2]), 0.0)
+    np.testing.assert_array_equal(
+        jax.grad(energy.value)(jnp.array([0.0, 1.0])), [0.0, 0.0]
+    )

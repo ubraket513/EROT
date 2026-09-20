@@ -9,6 +9,7 @@ import jax
 import jax.numpy as jnp
 
 from ..solvers.state import CONVERGED, INVALID_INPUT, ITERATION_LIMIT
+from ._precision import cast_floating, flow_dtype
 from .functionals import Energy
 from .jko import solve_entropic_jko
 from .pdhg import solve_pdhg_jko
@@ -97,6 +98,9 @@ def jko_step(
     the flow. Backend and solver method are structural choices under jit.
     """
     cost = jnp.asarray(cost)
+    dtype = flow_dtype(cost, state.rho, energy)
+    cost = cost.astype(dtype)
+    state = cast_floating(state, dtype)
     if cost.shape != (state.rho.size, state.rho.size):
         raise ValueError(
             "a trajectory requires a square cost matching its fixed mass grid"
@@ -194,6 +198,10 @@ def run_flow_chunk(
         not isinstance(snapshot_stride, int) or snapshot_stride <= 0
     ):
         raise ValueError("snapshot_stride must be a positive static integer or None")
+    cost = jnp.asarray(cost)
+    dtype = flow_dtype(cost, state.rho, energy)
+    cost = cost.astype(dtype)
+    state = cast_floating(state, dtype)
     size = 0 if snapshot_stride is None else 1 + steps // snapshot_stride
     snapshots = jnp.zeros((size, state.rho.size), state.rho.dtype)
     times = jnp.zeros((size,), state.time.dtype)

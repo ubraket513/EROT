@@ -9,6 +9,7 @@ import jax
 import jax.numpy as jnp
 
 from ..solvers.state import CONVERGED, INVALID_INPUT, ITERATION_LIMIT, NUMERICAL_FAILURE
+from ._precision import cast_floating, flow_dtype
 from .functionals import Energy
 from .state import JKODiagnostics, PDHGState
 
@@ -49,7 +50,10 @@ def solve_pdhg_jko(
         raise ValueError("cost must be a matrix with one column per previous mass")
     if not jnp.issubdtype(cost.dtype, jnp.floating) or jnp.iscomplexobj(previous):
         raise ValueError("PDHG requires real floating costs and real masses")
+    cost = cost.astype(flow_dtype(cost, previous, energy))
     previous = previous.astype(cost.dtype)
+    if state is not None:
+        state = cast_floating(state, cost.dtype)
     n, m = cost.shape
     norm2 = coupled_operator_norm_squared(n, m)
     default_step = 0.99 / math.sqrt(norm2)

@@ -86,3 +86,16 @@ def test_chunk_stops_attempting_after_failure():
     assert result.state.attempted_steps == 1
     assert result.state.time == 0
     assert result.diagnostics.status != CONVERGED
+
+
+def test_mixed_precision_promotes_state_before_device_loops():
+    c, _, e = case()
+    p = jnp.array([0.3, 0.7], dtype=jnp.float32)
+    for backend in ("sinkhorn", "pdhg"):
+        initial = initialize_flow(p, backend=backend)
+        result = run_flow_chunk(
+            initial, c, e, 0.3, 1e-6, 10000, steps=1, backend=backend, epsilon=0.2
+        )
+        assert result.state.status == CONVERGED
+        assert result.state.rho.dtype == jnp.float64
+        assert result.snapshots.dtype == jnp.float64
