@@ -40,21 +40,21 @@ Produce pure estimate_speedup(operation_seconds,solve_seconds,kernel_speedup,
 overhead_seconds=0) and compare_candidate(candidate,baseline,objective_atol,
 objective_rtol,baseline_peak=None,candidate_peak=None).
 
-- [ ] Write missing-module tests: eliminating30% of runtime cannot reach1.5x;
+- [x] Write missing-module tests: eliminating30% of runtime cannot reach1.5x;
   fraction0.8 at4x yields2.5x absent overhead; overhead reduces the prediction.
   Reject nonfinite/negative measurements and fractions outside[0,1].
-- [ ] Implement Amdahl screening with explicit assumptions. CLI labels the
+- [x] Implement Amdahl screening with explicit assumptions. CLI labels the
   prediction conditional on supplied profile measurements; it is not a result.
-- [ ] Test candidate/baseline mismatch, nonconvergence, objective disagreement,
+- [x] Test candidate/baseline mismatch, nonconvergence, objective disagreement,
   1.5x speed threshold,25% peak-memory threshold, and invalid memory provenance.
   Use existing schema2 contract; raw sample medians and numerical tolerances
   must validate before comparison.
-- [ ] Accept memory evidence only with an explicit isolated_peak_live_bytes
+- [x] Accept memory evidence only with an explicit isolated_peak_live_bytes
   measurement kind and matching case/hardware identity. Reject compiler or
   process-cumulative counters. No missing memory value becomes zero.
-- [ ] Report pass/fail for the measurement gate, never automatic backend release
+- [x] Report pass/fail for the measurement gate, never automatic backend release
   approval. Preserve evidence file hashes in CLI output and list unmet gates.
-- [ ] Run focused checks and commit the tool.
+- [x] Run focused checks and commit the tool.
 
 ## Task 2: explicit backend decision, validation matrix and review
 
