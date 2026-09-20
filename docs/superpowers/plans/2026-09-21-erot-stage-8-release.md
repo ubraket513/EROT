@@ -83,9 +83,9 @@ Files: docs/development/stage-8-validation.md, roadmap, relevant fixes.
   worker and launcher resume smoke. Record scientific outcomes, not exit alone.
 - [x] Run full current CPU/reference/integration suite, minimum suite, Ruff and
   all artifact checks. Record explicit GPU/artifact skips, never as passes.
-- [ ] Obtain one fresh final review for Stage8, reproduce/fix material findings,
+- [x] Obtain one fresh final review for Stage8, reproduce/fix material findings,
   then rerun affected checks/full suite as warranted and commit.
-- [ ] Audit every roadmap/software deliverable against current files and evidence;
+- [x] Audit every roadmap/software deliverable against current files and evidence;
   retain hardware gates explicitly open per the user's preparation instruction.
   Confirm original/nested Git status and SDPLab untouched. Preserve branch and
   commits for user review; do not merge/publish. Mark goal achieved only when

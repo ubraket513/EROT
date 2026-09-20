@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: Stages 0–6 software and CPU validation are complete and independently reviewed. Stage 7 selects JAX without a native component; Stage 8 is next. Actual GPU/Slurm gates remain unexecuted. See the stage validation documents under docs/development.
+Status: the selected Stage 0–8 software/release roadmap is complete and independently reviewed. Stage 7 retains JAX without a native component. Stage 8 verifies local EROT0.2.0 artifacts, minimum/current CPU runtimes and migration. Actual GPU/Slurm gates remain unexecuted under the user-authorized preparation-only delivery. See the stage validation documents under docs/development.
 
 **Goal:** first clean and restructure EROT, then integrate gradient flows and selected QOTLib algorithms into an openly shareable scientific library for independent experiments and large solves. Target Hopper-or-newer NVIDIA GPUs with configurable resources, preserve a CPU path, and keep SDPLab independent.
 
@@ -226,12 +226,14 @@ Software and CPU validation are complete; see [Stage 6 evidence](../../developme
 
 **Work:**
 
-- [ ] Document supported objectives, derivative support, precision modes, capacity limits, and actual GPU/distributed validation. Separate validated configurations from experimental and untested hardware.
-- [ ] Verify clean wheel/sdist installation and execute documented CPU examples and CLI workflows. Extend automated content inspection to both direct and sdist-derived wheels (Stage 0 review follow-up).
-- [ ] Publish reproducible benchmark configurations and clearly separate measurements from extrapolations.
-- [ ] Provide migration mappings from `jko_lab` into `erot.flows` and adopted QOTLib components into EROT, with scientific behavior changes, source revisions, reuse rights, and attribution recorded.
-- [ ] Remove redundant imported code only after every retained capability and historical source is accounted for; treat repository relocation and remote changes as separate explicit operations.
-- [ ] Keep SDPLab independent; do not introduce a shared runtime dependency merely because both projects run on the same cluster.
+- [x] Document supported objectives, derivative support, precision modes, capacity limits, and actual GPU/distributed validation. Separate validated configurations from experimental and untested hardware.
+- [x] Verify clean wheel/sdist installation and execute documented CPU examples and CLI workflows. Extend automated content inspection to both direct and sdist-derived wheels (Stage 0 review follow-up).
+- [x] Publish reproducible benchmark configurations and clearly separate measurements from extrapolations.
+- [x] Provide migration mappings from `jko_lab` into `erot.flows` and adopted QOTLib components into EROT, with scientific behavior changes, source revisions, reuse rights, and attribution recorded.
+- [x] Remove redundant imported code only after every retained capability and historical source is accounted for; treat repository relocation and remote changes as separate explicit operations.
+- [x] Keep SDPLab independent; do not introduce a shared runtime dependency merely because both projects run on the same cluster.
+
+**Evidence:** [Stage 8 release verification](../../development/stage-8-validation.md), [support matrix](../../support-matrix.md), and [migration guide](../../migration-0.2.md). Current CPU suite289passed9GPUskips; minimum base suite256passed; both wheel paths and sdist inspected, both wheels exercised outside checkout. One minor future version-assertion test guard is recorded; current artifacts match0.2.0. No push/publication/merge performed.
 
 **Exit:** an independently installable EROT release with reproducible examples, clear support limits, and a recoverable migration history. No publication or remote repository mutation is part of the current planning request.
 

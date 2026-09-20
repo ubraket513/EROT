@@ -28,7 +28,7 @@ Each wheel was installed into its own fresh base-only Python3.12 environment
 under `/tmp/erot-stage8-installed/{direct,rebuilt}`. The copied
 `tests/packaging/installed_smoke.py` ran with `-I` outside the checkout and verified:
 
-- installed path and version metadata0.2.0;
+- installed path and version metadata 0.2.0;
 - all five console commands' help;
 - classical dense product-plan reference and blocked transport convergence;
 - an accepted PDHG step with preserved mass and changed density;
@@ -46,7 +46,7 @@ All three scripts and supplied experiment configs were copied outside the
 checkout and executed using the rebuilt wheel's interpreter/console commands:
 
 - `quadratic_flow.py`: status0, three accepted steps, physical time1.2.
-- `heat_flow.py --cells16 --steps2`: status0, accepted time0.04,
+- `heat_flow.py --cells 16 --steps 2`: status0, accepted time0.04,
   mass error1.265e-8 and Neumann-mode L1 discrepancy0.0415963. This is a discrete
   smoke case; its nonzero continuum discrepancy is not concealed as PDE accuracy.
 - `quantum_entropy.py`: status0 after14 accepted updates, marginal error5.869e-9,
@@ -63,7 +63,7 @@ not isolated performance measurements.
 
 ## Preservation and release audit
 
-All11 entries in `archive/manifest.json` match their recorded byte sizes and
+All 11 entries in `archive/manifest.json` match their recorded byte sizes and
 SHA256 hashes. Original EROT main remains at
 `424c4ede55f67aa805c4f7914133a5a7bc1b9155`; numerical-gradient-flows remains at
 `0c6f5b50aee9ab5378970e28d700ab8fd193f554`; QOTLib remains at
@@ -95,11 +95,11 @@ PDHG, native components and end-to-end AD remain separate work packages.
 
 Fresh direct and sdist-derived wheels were built under `dist/stage8-final/`.
 With both artifact directories configured, the complete current CPU suite passed
-**289 tests,9 skips** in154.41s. All nine skips require unavailable CUDA hardware
+**289 tests, 9 skips** in 154.41s. All nine skips require unavailable CUDA hardware
 (two specifically require two GPUs); distribution checks executed and passed.
 Raw log: `/tmp/erot-stage8-final-suite.log`.
 
-Ruff check and format-check pass across114 Python files. `git diff --check`,
+Ruff check and format-check pass across 114 Python files. `git diff --check`,
 HPC shell syntax checks and release-document local link checks pass. Synthetic
 native CLI comparisons return zero at1.5× and one at1.42857×, retaining both
 input-file hashes; these are tool checks, not performance measurements.
@@ -111,4 +111,33 @@ the incomplete environment was removed before retrying with the verified
 base-only environments. No dependency or test assertion was bypassed. Final
 installation log: `/tmp/erot-stage8-final-installed.log`.
 
-Fresh final review is the remaining release gate.
+## Independent final review and decisions
+
+The fresh final reviewer found no Critical or Important issue and independently
+reran all three artifact checks. It verified both wheels' 51 package files against
+current source and their installed copies, and inspected the minimum/current
+suite and installed-smoke logs. All 51 current Python package files are present
+byte-for-byte in both wheel flavors.
+
+One minor follow-up is deferred: add an automated assertion that wheel `Version`
+equals authoritative `pyproject.toml`, rather than only comparing installed
+metadata with itself. Current direct/rebuilt wheel metadata and sdist metadata
+were explicitly checked against `pyproject.toml` and all equal 0.2.0. This is a
+future stale-artifact regression guard, not a current artifact defect.
+
+Review rulings:
+
+- Actual GPU/Slurm/interconnect/filesystem guarantees remain unmeasured, because
+  the user authorized preparation without hardware. Cost if incorrectly assumed:
+  unsupported platform/performance claims or unverified restart durability.
+- Native performance/interface validation remains conditional on a selected
+  component; this release selects none. Cost if later skipped: admitting an
+  incorrect or slower backend.
+- Earlier numerical stages rely on their independent references and the freshly
+  executed full suite, not an additional duplicate run by the release reviewer.
+  Cost if coverage misses a case: an undiscovered numerical defect; no broader
+  numerical or hardware guarantee is inferred from packaging review.
+
+The selected software/release roadmap is complete, with hardware gates explicitly
+open as requested. The verified branch/worktree and local commits are preserved;
+merging, pushing or publishing are separate operations and were not performed.
