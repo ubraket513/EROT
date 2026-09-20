@@ -182,6 +182,23 @@ def optimizer_budget_audit(budget):
     }
 
 
+def slack_feasibility(slack, equality_residual, tolerance=1e-7):
+    """Check all constraints on a candidate block dual slack, not just equality."""
+    slack = np.asarray(slack)
+    finite = bool(np.isfinite(slack).all() and np.isfinite(equality_residual))
+    hermiticity = float(np.linalg.norm(slack - slack.conj().swapaxes(-1, -2)))
+    minimum = float(np.linalg.eigvalsh(slack).min()) if finite else float("nan")
+    return {
+        "feasible": finite
+        and hermiticity <= tolerance
+        and minimum >= -tolerance
+        and equality_residual <= tolerance,
+        "slack_min_eigenvalue": minimum,
+        "slack_hermiticity_residual": hermiticity,
+        "feasibility_tolerance": tolerance,
+    }
+
+
 def block_audit(iterations=1000):
     import cvxpy as cp
     import jax.numpy as jnp
@@ -233,9 +250,10 @@ def block_audit(iterations=1000):
     penalty = float(regularization / 2 * jnp.sum(jnp.abs(v.value) ** 2))
     residual = float(jnp.linalg.norm(p.K1(u) + p.K2(v) - cost))
     value = bare - penalty
+    feasibility = slack_feasibility(np.asarray(v.value), residual)
     return {
         "status": "passed"
-        if residual < 1e-7 and abs(value - ref.value) < 1e-7
+        if feasibility["feasible"] and abs(value - ref.value) < 1e-7
         else "mismatch",
         "iterations": iterations,
         "equality_residual": residual,
@@ -243,7 +261,7 @@ def block_audit(iterations=1000):
         "omitted_penalty": penalty,
         "corrected_objective": value,
         "reference_objective": float(ref.value),
-        "slack_min_eigenvalue": float(np.linalg.eigvalsh(np.asarray(v.value)[0]).min()),
+        **feasibility,
         "interpretation": "full-clique dual with squared-slack regularization 1e-4",
     }
 

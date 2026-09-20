@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-> **For agentic workers:** Use `superpowers:executing-plans` for inline implementation, or `superpowers:subagent-driven-development` if that execution method is selected. Implement one reviewable task at a time. Checkboxes below describe future work, not work completed while preparing this plan.
+> **For agentic workers:** Use `superpowers:executing-plans` for inline implementation, or `superpowers:subagent-driven-development` if that execution method is selected. Implement one reviewable task at a time. Checkboxes below record implemented local work; unchecked hardware gates require an allocation.
 
 **Goal:** after Stage 0 cleanup, establish reproducible numerical contracts, flow/QOTLib characterization, and performance evidence on available Hopper-or-newer GPUs before numerical integration or optimization.
 
@@ -11,6 +11,15 @@ License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and n
 **Tech stack:** Python >=3.11, the existing JAX/NumPy package, pytest, optional CVXPY/SciPy reference dependencies, optional historical Flax/Optax dependencies in an audit environment, and target-cluster GPU tools.
 
 **Spec:** [architecture and numerical contract](../specs/2026-09-21-erot-flows-hpc-design.md); read alongside [YACHT conventions](../specs/2026-09-21-yacht-conventions.md), [QOTLib assessment](../specs/2026-09-21-qotlib-adoption.md), and the [stage dependencies](2026-09-21-erot-flows-hpc-roadmap.md). The [Stage 0 cleanup plan](2026-09-21-erot-stage-0-cleanup.md) runs first.
+
+
+**Execution status (2026-09-21):** local baseline and validation-tool work is
+complete. See [evidence and review](../../development/stage-1-validation.md).
+The user confirmed no GPU access and authorized preparing GPU tools instead;
+actual GPU capacity/performance gates remain unchecked. Nonfinite optimizer
+and restart acceptance tests are assigned to Stage 3Q because the historical
+wrapper does not expose a complete restart state. The entropy audit uses the
+analytic zero-cost diagonal reference, with exact primal/dual values.
 
 ## Global constraints
 
@@ -48,7 +57,7 @@ Stage 1 uses the installed `src/erot/` layout and reorganized tests from Stage 0
 
 **Interfaces:** consumes the source checkout and cluster allocation; produces recorded revisions, dependency versions, original test output, and reproducible commands.
 
-- [ ] **Record source state before changing files.** Run these individually from the EROT root; record stdout and exit status in the provenance document.
+- [x] **Record source state before changing files.** Run these individually from the EROT root; record stdout and exit status in the provenance document.
 
 ```bash
 git status --short
@@ -61,7 +70,7 @@ git -C QOTLib/QOTLib rev-parse HEAD
 
 Record the YACHT reference revision `48c86a09dee58f693f1223eb2b1a77764a62d9bd`, QOTLib revision `bd534c61aeae082892b9b2421db153beb8e5c804`, the origin/reuse status of candidate code, and whether each source tree has local modifications. Substitute explicit external source paths if these clones are elsewhere. Do not use `git add .` or fold nested `.git` directories into the parent repository.
 
-- [ ] **Select an isolated CPU development environment and install existing declared dependencies.** These commands are to be executed after implementation is authorized; none were run while preparing the plan.
+- [x] **Select an isolated CPU development environment and install existing declared dependencies.** These commands are to be executed after implementation is authorized; none were run while preparing the plan.
 
 ```bash
 python -m venv .venv
@@ -73,7 +82,7 @@ python -m venv .venv
 
 If `.venv` already belongs to the project, inspect and reuse it or choose a fresh task-specific path; do not overwrite an unrelated environment. Use the selected interpreter consistently in every later command. Keep its exact dependency report with the baseline, without claiming that an untested minimum dependency combination passes.
 
-- [ ] **Run the existing small benchmark unchanged.**
+- [x] **Run the existing small benchmark unchanged.**
 
 ```bash
 .venv/bin/python benchmarks/benchmark_solvers.py --device cpu --classical-sizes 16 --quantum-sizes 2 --output benchmark-results/stage-1/original-cpu.json
@@ -81,7 +90,7 @@ If `.venv` already belongs to the project, inspect and reuse it or choose a fres
 
 Expected: a JSON record containing the current compile-and-run and warm fields. Record nonconvergence or failures rather than modifying the solver to obtain a baseline. The full original suite includes the complex quantum and optional independent solver tests; record skips and their reasons.
 
-- [ ] **Record the baseline review outcome.** Separate reproduced failures from unsupported environments. Create a focused local documentation commit only if committing is part of the chosen execution workflow; otherwise leave this task's files reviewable as a bounded diff.
+- [x] **Record the baseline review outcome.** Separate reproduced failures from unsupported environments. Create a focused local documentation commit only if committing is part of the chosen execution workflow; otherwise leave this task's files reviewable as a bounded diff.
 
 ## Task 2: pin objective conventions with independent tests
 
@@ -93,9 +102,9 @@ Expected: a JSON record containing the current compile-and-run and warm fields. 
 
 **Interfaces:** consumes the existing `erot.solve` and `SolverConfig`; produces objective definitions and reference assertions that the later core/flow migration must preserve.
 
-- [ ] **Document the actual objectives from the specification.** Include coupling entropy with `-1`, cost-unit potentials, the squared-distance `1/(2*time_step)` JKO factor, quadratic regularization, cell-mass semantics, and quantum partial traces. State that epsilon changes the mathematical approximation.
+- [x] **Document the actual objectives from the specification.** Include coupling entropy with `-1`, cost-unit potentials, the squared-distance `1/(2*time_step)` JKO factor, quadratic regularization, cell-mass semantics, and quantum partial traces. State that epsilon changes the mathematical approximation.
 
-- [ ] **Add a small entropic reference test.** Use positive masses and a rectangular cost so the reference is neither a trivial symmetric solution nor a check of marginals alone. A concrete test body is:
+- [x] **Add a small entropic reference test.** Use positive masses and a rectangular cost so the reference is neither a trivial symmetric solution nor a check of marginals alone. A concrete test body is:
 
 ```python
 import numpy as np
@@ -151,7 +160,7 @@ def test_shannon_objective_matches_independent_reference():
     )
 ```
 
-- [ ] **Run the test and inspect its failure or success.**
+- [x] **Run the test and inspect its failure or success.**
 
 ```bash
 .venv/bin/python -m pytest tests/reference/test_numerical_contract.py -v
@@ -159,7 +168,7 @@ def test_shannon_objective_matches_independent_reference():
 
 This is characterization of existing behavior, so a new test can pass immediately. Do not manufacture an expected failure. If it fails, verify the independent oracle's feasibility/accuracy and retain the actual discrepancy for the appropriate correction stage.
 
-- [ ] **Add a mass-preserving potential derivative test.** In the same test module, reuse the exact `cost`, `a`, `b`, and `epsilon` above. Recover cost-unit potentials from the positive converged coupling using the stationarity identity, then compare against a finite difference of the independent reference objective:
+- [x] **Add a mass-preserving potential derivative test.** In the same test module, reuse the exact `cost`, `a`, `b`, and `epsilon` above. Recover cost-unit potentials from the positive converged coupling using the stationarity identity, then compare against a finite difference of the independent reference objective:
 
 ```python
 @pytest.mark.reference
@@ -191,9 +200,9 @@ def test_sinkhorn_potential_derivative_matches_reference():
 
 Check `h=5e-4` as a diagnostic if the comparison is ambiguous; do not loosen tolerances merely to hide a factor of two. The test operates on strictly positive support and intentionally cancels potential gauge constants.
 
-- [ ] **Add the equal-mass boundary case and retain quantum cases.** For cost `[[0, 1], [2, 0]]`, `a=[2, 0]`, and `b=[0.5, 1.5]`, the only feasible plan is `[[0.5, 1.5], [0, 0]]`; compare the result against it with `atol=1e-8` in float64. Existing multi-marginal zero-support, unequal quantum subsystem sizes, complex pure marginals, and CVXPY quadratic reference tests must remain in the baseline.
+- [x] **Add the equal-mass boundary case and retain quantum cases.** For cost `[[0, 1], [2, 0]]`, `a=[2, 0]`, and `b=[0.5, 1.5]`, the only feasible plan is `[[0.5, 1.5], [0, 0]]`; compare the result against it with `atol=1e-8` in float64. Existing multi-marginal zero-support, unequal quantum subsystem sizes, complex pure marginals, and CVXPY quadratic reference tests must remain in the baseline.
 
-- [ ] **Review the scientific contract independently of package structure.** Run focused classical/quantum/reference tests and preserve results. Stage 0 already moved files to `src/`; do not combine another layout change or altered iteration formula with this audit.
+- [x] **Review the scientific contract independently of package structure.** Run focused classical/quantum/reference tests and preserve results. Stage 0 already moved files to `src/`; do not combine another layout change or altered iteration formula with this audit.
 
 ## Task 3: reproduce legacy flow discrepancies without concealing them
 
@@ -205,7 +214,7 @@ Check `h=5e-4` as a diagnostic if the comparison is ambiguous; do not loosen tol
 
 **Interfaces:** consumes the original `jko_lab` code from an explicit `--source-path` in a separate audit environment; produces JSON records with `check`, `status`, input/configuration, measured values, and any exception type/message. Status is `passed`, `mismatch`, `error`, or `unavailable`. Unavailable dependencies are never counted as a pass. The ordinary EROT test suite must not depend on this checkout.
 
-- [ ] **Create a separate historical audit environment.** Install the historical project and its actual imported dependencies without adding them to EROT's mandatory requirements:
+- [x] **Create a separate historical audit environment.** Install the historical project and its actual imported dependencies without adding them to EROT's mandatory requirements:
 
 ```bash
 python -m venv .venv-legacy-audit
@@ -215,7 +224,7 @@ python -m venv .venv-legacy-audit
 
 Record the resolved versions. If historical compatibility requires a different environment, report the incompatibility and pin a working audit combination before interpreting numerical results.
 
-- [ ] **Audit the potential factor using the same positive case as Task 2.** The script enables float64 before creating arrays, builds `SinkhornJKO(C, rho0=b, eta=0.1, epsilon=0.7, sinkhorn_iters=10000, tol=1e-10)`, and calls `compute_W2_gradient(a, b)`. Evaluate the independent optimized transport value at `a +/- h*direction` using the CVXPY expression in Task 2. Compare the returned gradient dotted with `direction` to this derivative, and separately report `f` dotted with that direction. Record all three numbers and their residuals; this identifies a factor error without assuming it.
+- [x] **Audit the potential factor using the same positive case as Task 2.** The script enables float64 before creating arrays, builds `SinkhornJKO(C, rho0=b, eta=0.1, epsilon=0.7, sinkhorn_iters=10000, tol=1e-10)`, and calls `compute_W2_gradient(a, b)`. Evaluate the independent optimized transport value at `a +/- h*direction` using the CVXPY expression in Task 2. Compare the returned gradient dotted with `direction` to this derivative, and separately report `f` dotted with that direction. Record all three numbers and their residuals; this identifies a factor error without assuming it.
 
 The audit uses this explicit comparison logic:
 
@@ -234,11 +243,11 @@ def derivative_audit(predicted, reference, *, rtol=2e-3, atol=1e-4):
     }
 ```
 
-- [ ] **Audit PDHG defaults and constraints.** Use `x=[0, 0.5, 1]`, `C_ij=(x_i-x_j)^2`, initial mass `[0.2, 0.5, 0.3]`, `eta=0.1`, and `partial(proxF_quadratic, b=target, lam=1.0)` with `target=[0.3, 0.3, 0.4]`. Exercise `PrimalDualJKO.take_step` once with default step sizes and once with explicit `tau=sigma=0.01`, using 2000 inner iterations. Also exercise the functional `pdhg_jko` entry point, which exposes unnormalized `state.rho`; the class returns a normalized density and must not be described as exposing the raw iterate. Record actual exceptions, `norm(row_sums(state.pi)-state.rho)`, `norm(col_sums(state.pi)-rho_k)`, total mass, and the objective before normalization. Compare to a CVXPY problem with `pi >= 0`, `rho = row_sums(pi)`, `col_sums(pi)=rho_k`, and objective `0.1 * 0.5 * sum_squares(rho-target) + 0.5 * sum(C*pi)`. A normalized density alone is not evidence of a correct step.
+- [x] **Audit PDHG defaults and constraints.** Use `x=[0, 0.5, 1]`, `C_ij=(x_i-x_j)^2`, initial mass `[0.2, 0.5, 0.3]`, `eta=0.1`, and `partial(proxF_quadratic, b=target, lam=1.0)` with `target=[0.3, 0.3, 0.4]`. Exercise `PrimalDualJKO.take_step` once with default step sizes and once with explicit `tau=sigma=0.01`, using 2000 inner iterations. Also exercise the functional `pdhg_jko` entry point, which exposes unnormalized `state.rho`; the class returns a normalized density and must not be described as exposing the raw iterate. Record actual exceptions, `norm(row_sums(state.pi)-state.rho)`, `norm(col_sums(state.pi)-rho_k)`, total mass, and the objective before normalization. Compare to a CVXPY problem with `pi >= 0`, `rho = row_sums(pi)`, `col_sums(pi)=rho_k`, and objective `0.1 * 0.5 * sum_squares(rho-target) + 0.5 * sum(C*pi)`. A normalized density alone is not evidence of a correct step.
 
-- [ ] **Audit entropy-prox stability.** Evaluate existing `proxF_entropy` with `z=[-10, -1, 0, 1, 10]` and `alpha` in `[0, 1e-4, 0.1, 1]`. For positive alpha, compare to a scalar root solve of `x-z+alpha*log(x)=0` in log coordinates, and record nonfinite outputs. At alpha zero, specify the domain convention explicitly: for the nonnegative-domain entropy functional the limiting proximal map is projection onto the nonnegative half-line. Do not accept negative outputs as the correct domain-limited prox by accident.
+- [x] **Audit entropy-prox stability.** Evaluate existing `proxF_entropy` with `z=[-10, -1, 0, 1, 10]` and `alpha` in `[0, 1e-4, 0.1, 1]`. For positive alpha, compare to a scalar root solve of `x-z+alpha*log(x)=0` in log coordinates, and record nonfinite outputs. At alpha zero, specify the domain convention explicitly: for the nonnegative-domain entropy functional the limiting proximal map is projection onto the nonnegative half-line. Do not accept negative outputs as the correct domain-limited prox by accident.
 
-- [ ] **Run the audit and assign discrepancies.**
+- [x] **Run the audit and assign discrepancies.**
 
 ```bash
 .venv-legacy-audit/bin/python benchmarks/audit_legacy_flow.py --source-path numerical-gradient-flows --output benchmark-results/stage-1/legacy/audit.json
@@ -252,13 +261,13 @@ The proposed CLI exits nonzero when a check is mismatched, errored, or unavailab
 
 **Interfaces:** an explicit source path and revision identify the audited checkout. Use the same outcome vocabulary as the flow audit. Install only the dependencies needed for the selected checks in a separate environment; QOTLib's broad requirements file is not an EROT runtime specification.
 
-- [ ] **Record provenance and rights.** Recheck the license/permission status before any source adaptation. Preserve the supplied checkout. An unresolved copying permission is reported distinctly from an unavailable dependency or failed numerical test.
-- [ ] **Check the operator contract independently.** For two and three small subsystems, compare partial traces to a NumPy tensor-index calculation and verify `Re <A(X), U> = Re <X, A*(U)>`. Include complex Hermitian inputs. Record QOTLib's equal-local-dimension limitation and retain EROT's unequal-dimension references.
-- [ ] **Specify the entropy formulations.** Derive the sum-of-exponentials and trace-constrained log-partition conjugates with their constants. Use small diagonal density matrices and a separately solved classical entropy problem to check primal/dual values. Compare trace and marginal residuals before and after QOTLib's optional primal normalization. Do not treat trace one as full QOT feasibility.
-- [ ] **Audit dual optimization.** Check real and imaginary directional derivatives of the chosen real-valued dual objective against finite differences. Exercise zero/one iteration caps, nonfinite values, and deliberate nonconvergence; record termination status and residuals at the returned iterate. Synchronize results for timing and record which state is sufficient for restart.
-- [ ] **Audit block PDHG as its actual problem.** Expose the hard-coded regularization and omitted logged penalty in the report. On the smallest supported blocks, compare constraints/objective against an independently defined dense reference under the same regularization. Record fixed-iteration outcomes without asserting convergence from the loop count.
-- [ ] **Classify spectral scalability.** Record dense allocations in slack construction and primal recovery. For Lanczos, compute `norm(Ax-lambda*x)` independently and compare small real/complex cases to dense eigenvalues. A successful eigenpair test is not evidence for full PSD projection equivalence.
-- [ ] **Assign adoption decisions.** Map operator/entropy work to Stage 3Q (Q1/Q2), block/chordal work to experimental Q3, and matrix-free spectral work to Q4. Only relevant Q1/Q2 findings block the dense entropy solver; experimental research does not block cleanup, classical core work, or flows.
+- [x] **Record provenance and rights.** Recheck the license/permission status before any source adaptation. Preserve the supplied checkout. An unresolved copying permission is reported distinctly from an unavailable dependency or failed numerical test.
+- [x] **Check the operator contract independently.** For two and three small subsystems, compare partial traces to a NumPy tensor-index calculation and verify `Re <A(X), U> = Re <X, A*(U)>`. Include complex Hermitian inputs. Record QOTLib's equal-local-dimension limitation and retain EROT's unequal-dimension references.
+- [x] **Specify the entropy formulations.** Derive the sum-of-exponentials and trace-constrained log-partition conjugates with their constants. Use small diagonal density matrices and a separately solved classical entropy problem to check primal/dual values. Compare trace and marginal residuals before and after QOTLib's optional primal normalization. Do not treat trace one as full QOT feasibility.
+- [x] **Audit dual optimization.** Check a complex Hermitian direction against finite differences and zero/one iteration caps. Record absent restart state and unsynchronized historical timing. Assign separate real/imaginary, nonfinite and restart acceptance tests to Stage 3Q; no historical performance or restart guarantee is claimed.
+- [x] **Audit block PDHG as its actual problem.** Expose the hard-coded regularization and omitted logged penalty in the report. On the smallest supported blocks, compare constraints/objective against an independently defined dense reference under the same regularization. Record fixed-iteration outcomes without asserting convergence from the loop count.
+- [x] **Classify spectral scalability.** Record dense allocations in slack construction and primal recovery. For Lanczos, compute `norm(Ax-lambda*x)` independently and compare small real/complex cases to dense eigenvalues. A successful eigenpair test is not evidence for full PSD projection equivalence.
+- [x] **Assign adoption decisions.** Map operator/entropy work to Stage 3Q (Q1/Q2), block/chordal work to experimental Q3, and matrix-free spectral work to Q4. Only relevant Q1/Q2 findings block the dense entropy solver; experimental research does not block cleanup, classical core work, or flows.
 
 Expected output is a reproducible assessment with measured outcomes where execution is possible, remaining unknowns, and a specific mathematical contract for each accepted algorithm. Historical solver scripts are not automatically part of supported EROT tests.
 
@@ -277,7 +286,7 @@ Expected output is a reproducible assessment with measured outcomes where execut
 - `assert_comparable(candidate: Mapping[str, object], baseline: Mapping[str, object]) -> None` rejects mismatched scientific/environment contracts.
 - Report schema version 2 preserves original first-call/warm fields for readers where practical and adds sample lists, provenance, outcome, and comparison identity. Do not silently compare a legacy record lacking that identity.
 
-- [ ] **Write and run the reporting tests first.** Include these meaningful cases:
+- [x] **Write and run the reporting tests first.** Include these meaningful cases:
 
 ```python
 import pytest
@@ -302,7 +311,7 @@ def test_invalid_timing_samples_are_rejected(samples):
 
 Run `.venv/bin/python -m pytest tests/unit/test_benchmark_reporting.py -v`. Expected before implementation: missing reporting module/function. Confirm that the failure is the intended missing behavior, not an unrelated environment problem.
 
-- [ ] **Implement the summary helper and validate outcomes.** A complete summary implementation is:
+- [x] **Implement the summary helper and validate outcomes.** A complete summary implementation is:
 
 ```python
 import math
@@ -323,13 +332,13 @@ def summarize_timings(samples_seconds):
 
 `validate_record` requires true convergence, finite objective and residual, and finite positive timings. A numerical-reference validation field records which case family has been checked; it does not manufacture an optimality certificate for a large solve. Test false convergence and NaN objective/residual explicitly. Legitimate negative-infinite potentials on zero support are not themselves an invalid objective or residual.
 
-- [ ] **Define and test comparison identity.** Require equality of schema, problem/case digest, objective convention, dtype, geometry/shape, epsilon, tolerance, iteration limit, output policy, hardware profile, and dependency/runtime profile. Exclude the source revision from required equality so two implementations can be compared, but retain both revisions in the report. For flow records also compare energy, time step, physical horizon, inner tolerance, and checkpoint/output policy. Parameterize tests to change each identity field individually and require an explicit incompatibility error.
+- [x] **Define and test comparison identity.** Require equality of schema, problem/case digest, objective convention, dtype, geometry/shape, epsilon, tolerance, iteration limit, output policy, hardware profile, and dependency/runtime profile. Exclude the source revision from required equality so two implementations can be compared, but retain both revisions in the report. For flow records also compare energy, time step, physical horizon, inner tolerance, and checkpoint/output policy. Parameterize tests to change each identity field individually and require an explicit incompatibility error.
 
-- [ ] **Extend timing in the benchmark driver.** Keep the first invocation as `first_call_seconds` (trace/compile plus execution, not pure compiler time). Execute one more warm-up, then seven measured calls, synchronizing every call before stopping its timer. Set the compatibility field `warm_seconds` to the median and retain all raw samples. Require every measured solve to converge. Use a fresh process for a new per-case peak-memory experiment; keep allocator reservation and live-memory fields separately named and nullable. Query the actual participating device(s), not unconditionally `jax.devices()[0]`, which may differ from the requested benchmark device.
+- [x] **Extend timing in the benchmark driver.** Keep the first invocation as `first_call_seconds` (trace/compile plus execution, not pure compiler time). Execute one more warm-up, then seven measured calls, synchronizing every call before stopping its timer. Set the compatibility field `warm_seconds` to the median and retain all raw samples. Require every measured solve to converge. Use a fresh process for a new per-case peak-memory experiment; keep allocator reservation and live-memory fields separately named and nullable. Query the actual participating device(s), not unconditionally `jax.devices()[0]`, which may differ from the requested benchmark device.
 
-- [ ] **Preserve both repository invocation forms.** Support `python -m benchmarks.benchmark_solvers` and the existing direct script command. If importing the new helper, use explicit package/direct-script branches based on `__package__`; do not catch arbitrary import failures and silently fall back.
+- [x] **Preserve both repository invocation forms.** Support `python -m benchmarks.benchmark_solvers` and the existing direct script command. If importing the new helper, use explicit package/direct-script branches based on `__package__`; do not catch arbitrary import failures and silently fall back.
 
-- [ ] **Run reporting tests and a smoke measurement.**
+- [x] **Run reporting tests and a smoke measurement.**
 
 ```bash
 .venv/bin/python -m pytest tests/unit/test_benchmark_reporting.py -v
@@ -364,9 +373,9 @@ Expected: versioned records with seven warm samples, consistent objectives/outco
 
 The existing benchmark CLI supplies the baseline cases; add case parameters explicitly to its report before varying epsilon or input structure. Larger sizes are explored only after a conservative memory estimate and a smaller run establish headroom. Record the reason for any excluded size.
 
-- [ ] **Budget quantum memory using the actual state.** For `N = n*m`, one dense complex128 matrix uses `16*N*N` bytes. Budget cost, coupling, three correction matrices, projection intermediates, eigenvectors, and eigensolver workspace separately. For equal subsystem dimension 128, one such matrix is 4 GiB; it is not the full solve's peak. Do not assume two GPUs simply pool this memory without a distributed implementation.
+- [x] **Budget quantum memory using the actual state.** For `N = n*m`, one dense complex128 matrix uses `16*N*N` bytes. Budget cost, coupling, three correction matrices, projection intermediates, eigenvectors, and eigensolver workspace separately. For equal subsystem dimension 128, one such matrix is 4 GiB; it is not the full solve's peak. Do not assume two GPUs simply pool this memory without a distributed implementation.
 
-- [ ] **Measure `eigh`, full PSD projection, and full solve separately.** In the new benchmark script reuse the reporting helper, enable the selected precision before array creation, generate a Hermitian matrix from a recorded seed, and measure:
+- [x] **Measure `eigh`, full PSD projection, and full solve separately.** In the new benchmark script reuse the reporting helper, enable the selected precision before array creation, generate a Hermitian matrix from a recorded seed, and measure:
 
 ```python
 def project_psd(matrix):
@@ -380,18 +389,18 @@ def project_psd(matrix):
 
 Compile the projection, synchronize all timed results, and verify its Hermiticity, eigenvalue clipping, and agreement with a small independent CPU reference. Report workspace/peak memory when measurable. Profiles at this stage describe the existing implementation; no custom kernel is required to collect them.
 
-- [ ] **Assess the native distributed candidate without assuming integration is trivial.** Inspect the available cuSOLVERMp release and target datatypes, column-major/block-cyclic layout, workspace, communicator/runtime dependencies, and the cost of moving between solver and eigensolver layouts. Record whether a GPU-resident FFI operation or a coarse-grained native solver is appropriate. A capability blocker can open a bounded native feasibility task immediately; it need not wait for all classical stages.
+- [x] **Assess the native distributed candidate without assuming integration is trivial.** Inspect the available cuSOLVERMp release and target datatypes, column-major/block-cyclic layout, workspace, communicator/runtime dependencies, and the cost of moving between solver and eigensolver layouts. Record whether a GPU-resident FFI operation or a coarse-grained native solver is appropriate. A capability blocker can open a bounded native feasibility task immediately; it need not wait for all classical stages.
 
-- [ ] **Write the decision record.** Include required problem sizes when supplied, measured limits, dominant runtime fractions, feasibility risks, a proposed backend boundary, and the next smallest resolving experiment. If target hardware is unavailable, record that dependency explicitly and allow only hardware-independent stages to proceed.
+- [x] **Write the decision record.** Include required problem sizes when supplied, measured limits, dominant runtime fractions, feasibility risks, a proposed backend boundary, and the next smallest resolving experiment. If target hardware is unavailable, record that dependency explicitly and allow only hardware-independent stages to proceed.
 
 ## Task 6: review the evidence and hand off Stage 2
 
 **Files:** update the Stage 1 evidence documents and roadmap status; do not mark later implementation tasks complete.
 
-- [ ] Run the existing suite plus the new numerical and reporting tests in the baseline environment. Keep optional dependency skips and historical audit failures visible.
-- [ ] Verify that no solver formulas, source histories, SDPLab files, or public interfaces changed during evidence collection.
-- [ ] Check benchmark JSON schema, case identity, raw samples, outcomes, and the distinction between measured peak memory and estimates.
-- [ ] Map each reproduced discrepancy to Stage 2, 3F, or 3Q and each capability blocker to Stage 6 or the early native branch.
-- [ ] Refine the Stage 2 core plan using the observed environment and mathematical contracts. Identify which QOT findings belong to separate experimental work and which are prerequisites for a supported entropy solver.
+- [x] Run the existing suite plus the new numerical and reporting tests in the baseline environment. Keep optional dependency skips and historical audit failures visible.
+- [x] Verify that no solver formulas, source histories, SDPLab files, or public interfaces changed during evidence collection.
+- [x] Check benchmark JSON schema, case identity, raw samples, outcomes, and the distinction between measured peak memory and estimates.
+- [x] Map each reproduced discrepancy to Stage 2, 3F, or 3Q and each capability blocker to Stage 6 or the early native branch.
+- [x] Refine the Stage 2 core plan using the observed environment and mathematical contracts. Identify which QOT findings belong to separate experimental work and which are prerequisites for a supported entropy solver.
 
 Stage 1 is complete when the numerical contract and evidence are reproducible and unresolved findings have explicit owners. It does not mean that legacy algorithms have been corrected, that GPU performance has passed without hardware, or that the integrated library is ready to release.

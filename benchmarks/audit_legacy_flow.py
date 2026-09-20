@@ -132,6 +132,8 @@ def audit_pdhg(legacy, mode):
     finite = bool(np.isfinite(rho).all() and np.isfinite(plan).all())
     matches = (
         finite
+        and float(rho.min()) >= -1e-9
+        and float(plan.min()) >= -1e-9
         and max(row_error, col_error) < 1e-5
         and np.isclose(value, reference.value, atol=1e-5, rtol=1e-4)
     )
@@ -139,6 +141,9 @@ def audit_pdhg(legacy, mode):
         "status": "passed" if matches else "mismatch",
         "rho_kind": rho_kind,
         "mass": float(rho.sum()),
+        "minimum_density": float(rho.min()),
+        "minimum_coupling": float(plan.min()),
+        "nonnegativity_tolerance": 1e-9,
         "objective": value,
         "reference_objective": float(reference.value),
         "row_residual": row_error,

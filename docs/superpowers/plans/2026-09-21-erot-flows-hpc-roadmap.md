@@ -51,12 +51,12 @@ Stages 3F and 3Q are separate tracks after the shared core; neither requires the
 
 **Work:**
 
-- [ ] Record source revisions/status, existing CPU suite and CLI outcomes, and a small benchmark snapshot.
-- [ ] Inventory generated outputs, required fixtures, nested histories, and source reuse questions; archive historical artifacts with hashes rather than discarding them.
-- [ ] Adopt setuptools discovery under `src`, preserving public imports, CLI flags, and numerical behavior.
-- [ ] Isolate local reference repositories from the package and parent index; keep SDPLab untouched.
-- [ ] Introduce formatting/correctness checks separately from file moves and add contributor guidance.
-- [ ] Build wheel and sdist, rebuild from sdist, install outside the checkout, and verify API/CLI behavior without optional native/plotting dependencies.
+- [x] Record source revisions/status, existing CPU suite and CLI outcomes, and a small benchmark snapshot.
+- [x] Inventory generated outputs, required fixtures, nested histories, and source reuse questions; archive historical artifacts with hashes rather than discarding them.
+- [x] Adopt setuptools discovery under `src`, preserving public imports, CLI flags, and numerical behavior.
+- [x] Isolate local reference repositories from the package and parent index; keep SDPLab untouched.
+- [x] Introduce formatting/correctness checks separately from file moves and add contributor guidance.
+- [x] Build wheel and sdist, rebuild from sdist, install outside the checkout, and verify API/CLI behavior without optional native/plotting dependencies.
 
 **Exit:** recoverable source/artifact inventory, unchanged existing numerical outcomes, correct installed distributions, intentional test discovery, and a clean active layout. Neither new solver algorithms nor cluster performance evidence is required for this gate.
 
@@ -68,12 +68,12 @@ Stages 3F and 3Q are separate tracks after the shared core; neither requires the
 
 **Work:**
 
-- [ ] Pin Shannon/quadratic/JKO objectives with independent small references and retain complex/unequal-dimension QOT coverage.
-- [ ] Reproduce or rule out the flow gradient normalization, PDHG defaults/constraints, and entropy-prox discrepancies without changing the historical checkout.
-- [ ] Audit QOTLib's entropy conjugates, primal recovery, complex dual differentiation, and block objective before selecting an import; record source reuse status.
-- [ ] Extend timing to repeated synchronized samples, scientific comparison keys, outcome checks, and isolated memory records.
-- [ ] Inventory available Hopper-or-newer hardware, memory, topology, actual CPU allocation, runtime, and interconnect using configurable profiles.
-- [ ] Assess full quantum spectral memory and native distributed eigensolver feasibility independently of classical sharding.
+- [x] Pin Shannon/quadratic/JKO objectives with independent small references and retain complex/unequal-dimension QOT coverage.
+- [x] Reproduce or rule out the flow gradient normalization, PDHG defaults/constraints, and entropy-prox discrepancies without changing the historical checkout.
+- [x] Audit QOTLib's entropy conjugates, primal recovery, complex dual differentiation, and block objective before selecting an import; record source reuse status.
+- [x] Extend timing to repeated synchronized samples, scientific comparison keys, outcome checks, and isolated memory records.
+- [x] Prepare configurable hardware/allocation inventory; record CPU availability and explicit GPU unavailability. Actual Hopper-or-newer memory, topology, runtime and interconnect validation awaits hardware (user-confirmed).
+- [x] Assess full quantum spectral memory and native distributed eigensolver feasibility independently of classical sharding.
 
 **Interface:** this stage characterizes installed `src/erot/` behavior without changing solver formulas. Historical audits accept explicit source paths and run in isolated environments.
 
