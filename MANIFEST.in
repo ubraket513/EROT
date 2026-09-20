@@ -4,6 +4,7 @@ graft benchmarks
 graft examples
 graft experiments
 graft hpc
+graft requirements
 graft docs
 include LICENSE.txt
 include LICENSES/Apache-2.0.txt

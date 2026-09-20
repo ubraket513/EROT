@@ -1,0 +1,8 @@
+# Reproducible experimental distributed CPU validation, Python 3.12.13.
+# Install EROT separately with --no-deps after these runtime pins.
+jax==0.11.2
+jaxlib==0.11.2
+numpy==2.5.3
+scipy==1.18.1
+ml-dtypes==0.6.0
+opt-einsum==3.4.0
