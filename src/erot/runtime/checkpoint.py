@@ -183,17 +183,22 @@ def save_checkpoint(path: str | Path, state, metadata: dict) -> Path:
     return generation
 
 
-def load_checkpoint(path: str | Path, expected_metadata: dict):
+def load_checkpoint(path: str | Path, expected_metadata: dict, *, generation=None):
     """Read the last published generation, returning NumPy-backed state and metadata.
 
     Compatibility is exact for every supplied expected metadata field. Array
+    An explicit generation reads that immutable record instead of LATEST.
     shapes/dtypes are checked before state reconstruction; callers explicitly
     place the loaded leaves on their selected JAX device afterwards.
     """
     expected = _metadata(expected_metadata)
     root = Path(path)
-    name = (root / "LATEST").read_text(encoding="utf-8").strip()
-    if not _GENERATION.fullmatch(name):
+    name = (
+        (root / "LATEST").read_text(encoding="utf-8").strip()
+        if generation is None
+        else generation
+    )
+    if not isinstance(name, str) or not _GENERATION.fullmatch(name):
         raise ValueError("invalid checkpoint generation name")
     generation = root / name
     if generation.is_symlink() or generation.resolve().parent != root.resolve():

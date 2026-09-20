@@ -73,3 +73,36 @@ A two-virtual-CPU compiler inspection at tile size 3 reported 38,068 bytes for
 padded n=258,m=383 and 74,380 bytes for n=514,m=766. No full global or local
 coupling shapes appeared in the compiled representation. This is compiler
 buffer accounting, not measured live GPU memory or allocator reservation.
+
+## Distributed checkpoint publication
+
+All processes call save_distributed_checkpoint with their local addressable
+state and compatibility metadata. The owning driver must hold the global run
+lock on process zero. Each save chooses a shared unique generation, writes an
+immutable rank checkpoint on every process, and exchanges success before
+publication. Process zero writes a manifest naming each exact rank generation
+and its manifest checksum, then atomically replaces the global LATEST pointer.
+An incomplete rank write leaves the previous globally published checkpoint
+selected. Orphan generations are ignored, not automatically deleted.
+
+All processes also participate in load_distributed_checkpoint. They read the
+same global manifest and their own rank payload, validate topology and metadata,
+and exchange load success before proceeding. A missing/corrupt rank makes the
+load fail globally. Local rank LATEST pointers are not authoritative once the
+global manifest is published. No full source vector or transport plan is
+assembled on the host. Same-topology restart is supported; resharded restart is
+not advertised. Replicated target state is intentionally stored per process.
+
+The filesystem must provide the documented POSIX locking/rename/fsync semantics
+and shared visibility. Python I/O failures are coordinated; a process killed
+inside a collective is handled by the distributed runtime and job launcher,
+not by silently proceeding with fewer ranks. Target-filesystem power-loss
+behavior and actual scheduler failure recovery remain hardware/environment gates.
+
+A localhost two-process CPU test supplies four rows per process for seven valid
+source points, matches the single-process dense solution, saves/restores a
+three-sweep state and reaches the same final potentials. It also simulates a
+write failure on only one rank and removes one rank's payload: publication and
+load respectively fail on all participants, preserving the old global pointer
+in the interrupted-save case. These tests use Gloo CPU collectives; they do not
+validate CUDA/NCCL communication.
