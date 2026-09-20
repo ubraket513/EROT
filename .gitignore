@@ -1,21 +1,33 @@
-# result tensors from tests
-/tests/testdata
-
-### Python template
-# Byte-compiled / optimized / DLL files
+# Python and build tooling
 __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info/
 .pytest_cache/
-.venv/
-build/
-benchmark-results/
-
-# Installer logs
+.ruff_cache/
+.venv*/
+/build/
+/dist/
 pip-log.txt
 pip-delete-this-directory.txt
+.coverage
+.coverage.*
+/coverage.xml
+/htmlcov/
 
-# Jupyter Notebook
+# Generated data and notebook state
+/benchmark-results/
+/results/
+/checkpoints/
+/tests/testdata/
 .ipynb_checkpoints
-test.ipynb
+
+# Local tooling and isolated workspaces
+/.serena/
+/.superpowers/
+/.worktrees/
+
+# Independent reference repositories; never vendor their nested Git histories
+/numerical-gradient-flows/
+/QOTLib/
+/SDP-Simulation/
