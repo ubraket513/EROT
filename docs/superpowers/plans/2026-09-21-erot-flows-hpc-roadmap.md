@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: Stages 0–5 software and CPU validation are complete and independently reviewed. Stage 6 is next; actual GPU/Slurm gates remain unexecuted. See the stage validation documents under docs/development.
+Status: Stages 0–6 software and CPU validation are complete and independently reviewed. Stage 7 is in progress; actual GPU/Slurm gates remain unexecuted. See the stage validation documents under docs/development.
 
 **Goal:** first clean and restructure EROT, then integrate gradient flows and selected QOTLib algorithms into an openly shareable scientific library for independent experiments and large solves. Target Hopper-or-newer NVIDIA GPUs with configurable resources, preserve a CPU path, and keep SDPLab independent.
 
@@ -183,15 +183,18 @@ Software and CPU validation are complete; see [Stage 5 evidence](../../developme
 
 **Work:**
 
-- [ ] Verify two local GPUs under one process, followed by two processes owning one GPU each.
-- [ ] Implement the row-partitioned Sinkhorn communication contract from the specification, including stable global reductions and globally consistent convergence decisions.
-- [ ] Test uneven partitions, zero support on one shard, and rank-consistent iteration/termination behavior.
-- [ ] Generate/load local input blocks, preserve global array semantics, and checkpoint all required shards without gathering the full plan.
+- [x] Verify one process with two virtual CPU devices and two real CPU processes, including local inputs, collective equivalence and restart.
+- [ ] Verify the prepared one-controller/two-GPU and two-process/one-GPU paths on actual target hardware.
+- [x] Implement the row-partitioned Sinkhorn communication contract from the specification, including stable global reductions and globally consistent convergence decisions.
+- [x] Test uneven partitions, zero support on one shard, and rank-consistent iteration/termination behavior.
+- [x] Generate/load local input blocks, preserve global array semantics, and checkpoint all required shards without gathering the full plan.
 - [ ] Measure speedup on problems fitting one GPU and capacity on larger problems. Report per-GPU peak memory and communication share.
-- [ ] Evaluate distributed dense PDHG separately; do not infer its memory behavior from the implicit Sinkhorn implementation.
-- [ ] Promote to two nodes only when interconnect and launch tests pass. Keep unsupported or unmeasured platforms explicit.
+- [x] Evaluate distributed dense PDHG separately; do not infer its memory behavior from the implicit Sinkhorn implementation.
+- [x] Keep two-node promotion gated on interconnect and launch tests; unsupported and unmeasured platforms remain explicit.
 
 **Quantum branch:** use Stage 1 feasibility evidence to select a supported single-GPU limit, a distributed native eigensolver integration, or a separately scoped structured formulation. Release notes distinguish these outcomes; they must not imply that sharding `eigh` is solved by classical transport sharding or a single Lanczos eigenpair.
+
+Software and CPU validation are complete; see [Stage 6 evidence](../../development/stage-6-validation.md). The GPU promotion gates above remain unexecuted. Benchmark, checkpoint, profiler and launch tools are prepared per the user’s no-hardware instruction.
 
 **Exit:** numerical equivalence and collective correctness pass on real target hardware. A distributed mode is justified by measured speed or capacity. An illustrative investigation target is 1.3x speedup on two GPUs for sufficiently large compute-dominated cases; failure to meet it triggers analysis, not an invented performance claim.
 

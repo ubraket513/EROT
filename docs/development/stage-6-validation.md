@@ -42,3 +42,22 @@ and rank-specific profiler capture are separate. CPU trace capture succeeded.
 Opt-in actual two-GPU tests are prepared and skipped here. GPU speedup/capacity,
 peak live memory, communication share, Slurm and interconnect gates remain open.
 Distributed dense PDHG and quantum spectral solves are explicitly unsupported.
+
+## Final verification and review
+
+The final CPU suite passed 268 tests with 11 expected skips: nine unavailable
+GPU checks and two opt-in artifact checks, which passed separately. Ruff and
+formatting passed. Final wheel/sdist builds and both artifact inspections passed.
+One fresh reviewer found a Slurm spooling path defect: resolving the rank helper
+beside the copied batch script fails. The template now requires an explicit
+readable shared absolute EROT_RANK_SCRIPT path. A copied-script regression first
+failed with exit127 and now completes a real CPU solve through a local srun shim.
+No material review findings or deferred minors remain.
+
+Review rulings retain documented boundaries: actual GPU/Slurm/interconnect
+promotion and filesystem power-loss certification await target access; process
+death inside collectives is handled by JAX/job orchestration; resharded restart
+and distributed PDHG/quantum spectral solves are not supported. Low-level callers
+must supply consistent replicated arguments; the production driver checks their
+configuration and generated-input identity. Violating that low-level contract
+can produce divergence and is not a supported recovery mode.

@@ -48,7 +48,10 @@ individual solve.
 
 The experimental erot-distributed command cooperates across all ranks. Use
 experiments/configs/distributed-classical.json, a shared EROT_RUN_DIRECTORY and
-EROT_CONFIG path. hpc/run_distributed.sbatch starts a bound srun job step;
+EROT_CONFIG path. Set EROT_RANK_SCRIPT to the absolute shared path of
+hpc/distributed_rank.sh (for example, "$PWD/hpc/distributed_rank.sh" from the
+repository root). Slurm spools the batch script alone, so a sibling path beside
+that copied script is not valid. hpc/run_distributed.sbatch starts a bound srun job step;
 hpc/distributed_rank.sh maps SLURM_NTASKS and SLURM_PROCID to explicit JAX process
 arguments. Set EROT_DEVICE=gpu for CUDA (the rank script defaults to gpu), and
 EROT_PYTHON to the installed interpreter. Request the desired resources using

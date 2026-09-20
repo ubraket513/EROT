@@ -57,16 +57,16 @@ Interfaces:
 - partition_rows(n,parts,index): equal padded extent ceil(n/parts), global start,
   valid row count. Source generation consumes only local global row indices.
 
-- [ ] Write missing-module tests for deterministic uneven partitions and fresh
+- [x] Write missing-module tests for deterministic uneven partitions and fresh
   subprocess initialization with two forced host devices.
-- [ ] Record installed dependency versions and create the pinned CPU environment.
+- [x] Record installed dependency versions and create the pinned CPU environment.
   Use current official JAX documentation for shard_map and process-local arrays.
-- [ ] Implement initialization, mesh and array construction. Reject late backend
+- [x] Implement initialization, mesh and array construction. Reject late backend
   initialization with the runtime's explicit error, rather than silently falling
   back to single-process operation.
-- [ ] Probe one process/two CPU devices: global shape, addressable shards,
+- [x] Probe one process/two CPU devices: global shape, addressable shards,
   replicated target data and partition metadata agree with requested inputs.
-- [ ] Run focused tests, record actual outputs, commit.
+- [x] Run focused tests, record actual outputs, commit.
 
 ## Task 2: collective implicit Sinkhorn
 
@@ -81,24 +81,24 @@ counter are replicated. Caller supplies initial SinkhornState. This first
 interface supports squared Euclidean point clouds, two marginals and explicit
 same-problem state only; existing general dense and warm-start APIs remain.
 
-- [ ] Write a fresh-process two-device test comparing to dense and blocked solves
+- [x] Write a fresh-process two-device test comparing to dense and blocked solves
   for n=7,m=5 (padded to8), complex inputs rejected, both float32/64, small epsilon,
   all support concentrated on one shard and zero target entries. Initially fail
   on missing module. Check objective through implicit evaluation, potentials in
   weighted gauge, global residual and exact restart counters.
-- [ ] Implement local row update using complete replicated targets. For column
+- [x] Implement local row update using complete replicated targets. For column
   local log-sums l_r, use M=pmax(l_r), S=psum(exp(l_r-M)) with safe M=0 when all
   entries are -inf, then L=M+log(S); all-empty output remains -inf.
-- [ ] Compute row L1 residual with psum of local errors, column L1 residual from
+- [x] Compute row L1 residual with psum of local errors, column L1 residual from
   globally reduced log-sums, and take their maximum. Gauge shift uses psum of
   local weighted f and mass; apply f-=shift,g+=shift on positive supports only.
-- [ ] Reduce validity across all ranks before a globally uniform while_loop;
+- [x] Reduce validity across all ranks before a globally uniform while_loop;
   iteration count, failure/status and residual outputs are replicated. Check
   numerical controls, finite geometry, nonnegative matched masses and counters.
-- [ ] Test one rank's invalid marginal/control input yields a consistent failure,
+- [x] Test one rank's invalid marginal/control input yields a consistent failure,
   budget exhaustion and zero-budget resume preserve state, and split budgets
   reproduce an uninterrupted solve. Inspect compiled buffers for bounded tiles.
-- [ ] Record per-sweep collective contract (target-vector max/sum and scalar
+- [x] Record per-sweep collective contract (target-vector max/sum and scalar
   residual/gauge/validity reductions), run focused references, commit.
 
 ## Task 3: multiprocess execution and distributed checkpoints
@@ -111,46 +111,46 @@ encoding for local complete states; do not serialize a non-addressable global
 array via NumPy. Each process stores its addressable f shards, replicated g,
 iteration counters, local input identity and global partition metadata.
 
-- [ ] Write a two-process localhost CPU test with explicit coordinator address,
+- [x] Write a two-process localhost CPU test with explicit coordinator address,
   process IDs and one device each. Launch together with bounded timeout, capture
   separate logs, and verify consistent residual/status/iterations against the
   one-process reference. No scheduler needed for this correctness test.
-- [ ] Implement a bounded chunk CLI with deterministic local input generation
+- [x] Implement a bounded chunk CLI with deterministic local input generation
   using global row indices, explicit mesh topology and shared configuration.
   All ranks must execute solve/checkpoint collectives, rank0 prints summaries.
-- [ ] Add save_distributed_checkpoint/load_distributed_checkpoint: each rank
+- [x] Add save_distributed_checkpoint/load_distributed_checkpoint: each rank
   writes an immutable local generation; only after every rank confirms durable
   success does rank0 atomically publish a global manifest listing all exact
   generations. Never select each rank's latest independently on restart.
-- [ ] Test same-topology stop/resume, missing/corrupt rank data, changed topology,
+- [x] Test same-topology stop/resume, missing/corrupt rank data, changed topology,
   source/input/dtype rejection and simulated incomplete global publication.
   Keep global ownership on rank0 and coordinate errors before collective phases.
-- [ ] Add site-configurable Slurm launch template with explicit coordinator,
+- [x] Add site-configurable Slurm launch template with explicit coordinator,
   world size and rank mapping, before device access. No site/account/GPU model
   constants. Preserve scheduler GPU visibility; document shared filesystem needs.
-- [ ] Run local two-process tests, package CLI smoke, commit.
+- [x] Run local two-process tests, package CLI smoke, commit.
 
 ## Task 4: scaling tools, limits and independent review
 
 Files: benchmarks/distributed_sinkhorn.py, tests/gpu/test_distributed_gpu.py,
 docs/performance/distributed-transport.md, docs/development/stage-6-validation.md.
 
-- [ ] Add isolated one/two-device matched-tolerance measurements with warm-up,
+- [x] Add isolated one/two-device matched-tolerance measurements with warm-up,
   synchronized solve time, local/global shapes, process/device topology, compiler
   memory and available per-device runtime memory. Mark unavailable counters null.
-- [ ] Prepare one-process/two-GPU and two-process/one-GPU validation commands and
+- [x] Prepare one-process/two-GPU and two-process/one-GPU validation commands and
   opt-in tests; report numerical equivalence before speed/capacity comparisons.
   Profiler capture instructions separate collective time from computation; do
   not invent a communication share from static byte estimates.
-- [ ] Evaluate dense PDHG state storage and column-residual communication as a
+- [x] Evaluate dense PDHG state storage and column-residual communication as a
   separate documented path; do not advertise implementation/scaling without its
   own tests. Document dense quantum spectral capability and unmeasured GPU limit.
-- [ ] Document virtual CPU correctness results separately from unexecuted actual
+- [x] Document virtual CPU correctness results separately from unexecuted actual
   GPU peak memory, speedup, capacity and interconnect gates. Multi-node promotion
   stays gated. No1.3x speedup claim without measurement.
-- [ ] Run full CPU checks, package/installed workflow, focused multiprocess checks
+- [x] Run full CPU checks, package/installed workflow, focused multiprocess checks
   and one fresh final review; fix material findings with RED/GREEN regressions.
-- [ ] Commit validation and continue Stage7 native decision based on evidence.
+- [x] Commit validation and continue Stage7 native decision based on evidence.
 
 ## Plan self-review
 

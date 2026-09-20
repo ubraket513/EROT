@@ -199,3 +199,37 @@ def test_rank_script_one_process_two_devices(tmp_path):
     other = json.loads((tmp_path / "two-process/result.json").read_text())
     assert report["iterations"] == other["iterations"]
     np.testing.assert_allclose(report["error"], other["error"], atol=1e-12, rtol=1e-6)
+
+
+def test_spooled_batch_uses_explicit_shared_rank_script(tmp_path):
+    import shutil
+
+    repository = Path(__file__).resolve().parents[2]
+    spool = tmp_path / "spool/job1"
+    spool.mkdir(parents=True)
+    batch = spool / "slurm_script"
+    shutil.copyfile(repository / "hpc/run_distributed.sbatch", batch)
+    binary = tmp_path / "bin"
+    binary.mkdir()
+    srun = binary / "srun"
+    srun.write_text('#!/usr/bin/env bash\nset -euo pipefail\nshift\nexec "$@"\n')
+    srun.chmod(0o755)
+    config = write_config(tmp_path)
+    root = tmp_path / "spooled-result"
+    env = dict(os.environ) | {
+        "PATH": str(binary) + os.pathsep + os.environ["PATH"],
+        "EROT_CONFIG": str(config),
+        "EROT_RUN_DIRECTORY": str(root),
+        "EROT_RANK_SCRIPT": str(repository / "hpc/distributed_rank.sh"),
+        "EROT_DEVICE": "cpu",
+        "EROT_PYTHON": sys.executable,
+        "SLURM_NTASKS": "1",
+        "SLURM_PROCID": "0",
+        "JAX_PLATFORMS": "cpu",
+        "XLA_FLAGS": "--xla_force_host_platform_device_count=1",
+    }
+    completed = subprocess.run(
+        ["bash", str(batch)], env=env, capture_output=True, text=True, timeout=60
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert json.loads((root / "result.json").read_text())["status"] == "completed"
