@@ -49,3 +49,15 @@ python benchmarks/audit_legacy_flow.py --source-path /path/to/numerical-gradient
 This audit requires its own environment with the historical dependencies.
 It exits nonzero for mismatches/errors/unavailable checks and retains a JSON
 report. No legacy repository or optimizer dependency enters the base package.
+
+Hardware inventory and isolated quantum projection:
+
+```bash
+python -m benchmarks.hardware_inventory --backend cpu --output benchmark-results/hardware.json
+python -m benchmarks.benchmark_quantum_projection --device cpu --dimension 16 --dtype complex128 --output benchmark-results/projection.json
+```
+
+Use `gpu` explicitly on an allocated CUDA machine; unavailable GPU execution
+fails instead of being counted as CPU validation. See
+[quantum feasibility](../docs/performance/quantum-feasibility.md) for the workload
+ladder, memory accounting, native backend boundary and unexecuted hardware gates.
