@@ -82,3 +82,11 @@ wrapper, the operators expose two arbitrary positive subsystem dimensions.
 Tests use independent index loops and complex Hilbert-Schmidt identities.
 Gibbs recovery shifts the spectrum before exponentiation and exposes the
 log partition separately; normalization alone makes no marginal claim.
+
+The Stage 3Q entropy dual solver follows the same spectral conjugate/recovery
+contract and QOTLib's dual-optimization approach. Its ascent, backtracking,
+resume state, diagnostics and trace-constrained conjugate constant are explicitly
+implemented for EROT. It does not copy the historical optimizer's unconditional
+minimum iteration count, unbounded history or trace-only recovery criterion.
+A NumPy/SciPy complex reference and diagonal classical reduction independently
+check recovered matrices and objective conventions.

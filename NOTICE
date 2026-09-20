@@ -30,3 +30,7 @@ qotlib/regularization/_reg_sdp.py, qotlib/regularization/regs/entropy.py.
 The user confirmed Apache-2.0 reuse rights on 2026-09-21; the inspected checkout
 contained no LICENSE or NOTICE. EROT adaptations provide unequal bipartite
 dimensions, explicit tensor/adjoint conventions and shifted spectral recovery.
+The related src/erot/solvers/quantum_entropy.py adaptation is also Apache-2.0.
+It replaces QOTLib's optimizer driver with bounded JAX loops and complete
+resume state, uses an explicitly trace-constrained entropy conjugate including
+its constant, and checks marginal feasibility and primal-dual agreement.
