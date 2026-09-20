@@ -10,7 +10,7 @@ successful run with newer versions.
 
 ```bash
 python -m pytest
-python -m pytest tests/unit -m reference
+python -m pytest tests/unit tests/reference -m reference
 python -m pytest tests/integration
 ruff check src tests benchmarks
 ruff format --check src tests benchmarks

@@ -36,7 +36,7 @@ jobs:
       - name: CPU unit and independent reference tests
         env:
           JAX_PLATFORMS: cpu
-        run: python -m pytest tests/unit --cov=erot --cov-report=xml
+        run: python -m pytest tests/unit tests/reference --cov=erot --cov-report=xml
       - uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.python-version }}

@@ -27,6 +27,11 @@ modifications, and applicable license/NOTICE material alongside the adaptation.
 Do not represent future Apache-2.0-derived files as solely EROT-authored MIT code.
 This record does not modify the reference repositories or their histories.
 
+The historical gradient-flow `pyproject.toml` contains template MIT metadata
+and placeholder author details. For the planned adaptation, the user's explicit
+Apache-2.0 confirmation is the recorded licensing instruction; the original
+metadata is preserved unchanged and is not silently copied into EROT.
+
 Historical EROT output paths, hashes, and destinations are recorded in
 [the archive manifest](../../archive/manifest.json). Keep the original revision
 and the migration commits so both original and reorganized content remain
