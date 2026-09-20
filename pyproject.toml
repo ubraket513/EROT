@@ -41,8 +41,8 @@ Homepage = "https://github.com/kodh49/EROT"
 Issues = "https://github.com/kodh49/EROT/issues"
 
 [tool.setuptools.packages.find]
+where = ["src"]
 include = ["erot*"]
-exclude = ["deprecated*", "eot*", "tests*"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"

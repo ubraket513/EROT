@@ -1,0 +1,16 @@
+graft src/erot
+graft tests
+graft benchmarks
+graft docs
+include LICENSE.txt
+prune archive
+prune numerical-gradient-flows
+prune QOTLib
+prune SDP-Simulation
+prune .serena
+prune .superpowers
+prune .worktrees
+prune benchmark-results
+prune results
+prune checkpoints
+global-exclude __pycache__ *.py[cod]
