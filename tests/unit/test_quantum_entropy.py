@@ -84,3 +84,48 @@ def test_batched_solver_and_iteration_overflow_rejection():
     invalid = initial._replace(iterations=jnp.asarray(2**31 - 1, jnp.int64))
     _, diag = solve_quantum_entropy(c, a, b, 0.4, 1e-8, 1, state=invalid)
     assert diag.status == INVALID_INPUT
+
+
+def test_float32_rounded_budget_and_resume_counter_are_invalid():
+    c, a, b = case()
+    _, diag = solve_quantum_entropy(c, a, b, 0.4, 1e-8, jnp.float32(2**31))
+    assert diag.status == INVALID_INPUT
+    state, _ = solve_quantum_entropy(c, a, b, 0.4, 1e-8, 0)
+    state = state._replace(iterations=jnp.float32(2**31))
+    _, diag = solve_quantum_entropy(c, a, b, 0.4, 1e-8, 0, state=state)
+    assert diag.status == INVALID_INPUT
+
+
+def test_large_identity_cost_shift_preserves_coupling_and_convergence():
+    c, a, b = case()
+    base, base_diag = solve_quantum_entropy(c, a, b, 0.4, 1e-8, 1000)
+    shifted, diag = solve_quantum_entropy(c + 1e12 * jnp.eye(6), a, b, 0.4, 1e-8, 1000)
+    assert diag.status == CONVERGED
+    np.testing.assert_allclose(shifted.coupling, base.coupling, atol=1e-10)
+    assert shifted.iterations == base.iterations
+    np.testing.assert_allclose(diag.dual - base_diag.dual, 1e12, rtol=1e-15)
+    np.testing.assert_allclose(diag.gap, base_diag.gap, atol=1e-10)
+
+
+@pytest.mark.parametrize("count,budget", [(2**31, 0.0), (2**31 - 1, 1.0)])
+def test_float_budget_cannot_wrap_wide_resume_counter(count, budget):
+    c, a, b = case()
+    state, _ = solve_quantum_entropy(c, a, b, 0.4, 1e-8, 0)
+    state = state._replace(iterations=jnp.int64(count))
+    _, diag = solve_quantum_entropy(
+        c, a, b, 0.4, 1e-8, jnp.float32(budget), state=state
+    )
+    assert diag.status == INVALID_INPUT
+
+
+def test_dual_evaluation_large_cost_shift_preserves_gradient():
+    c, a, b = case()
+    duals = (
+        jnp.diag(jnp.array([0.123, -0.123])),
+        jnp.diag(jnp.array([0.1, 0.2, -0.3])),
+    )
+    base = entropy_dual(c, a, b, 0.4, duals)
+    shifted = entropy_dual(c + 1e12 * jnp.eye(6), a, b, 0.4, duals)
+    np.testing.assert_allclose(shifted[1], base[1], atol=1e-12)
+    for actual, expected in zip(shifted[2], base[2]):
+        np.testing.assert_allclose(actual, expected, atol=1e-12)

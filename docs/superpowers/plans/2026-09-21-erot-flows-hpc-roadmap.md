@@ -127,11 +127,11 @@ Stages 3F and 3Q are separate tracks after the shared core; neither requires the
 
 **Work:**
 
-- [ ] Implement partial-trace and adjoint contracts with complex inputs and unequal subsystem dimensions.
-- [ ] Define the spectral entropy primal/dual pair and trace/mass convention; distinguish trace-exponential and trace-constrained log-partition formulations.
-- [ ] Adapt the dual solve into pure JAX state and diagnostics, optional optimizer dependencies, bounded history, and explicit convergence/failure rules.
-- [ ] Validate primal recovery, marginal feasibility, stationarity, objective agreement, and complex derivatives independently.
-- [ ] Keep block PDHG/chordal and Lanczos extensions experimental until their own formulation, equivalence/approximation, and performance gates pass.
+- [x] Implement partial-trace and adjoint contracts with complex inputs and unequal subsystem dimensions.
+- [x] Define the spectral entropy primal/dual pair and trace/mass convention; distinguish trace-exponential and trace-constrained log-partition formulations.
+- [x] Adapt the dual solve into pure JAX state and diagnostics, optional optimizer dependencies, bounded history, and explicit convergence/failure rules.
+- [x] Validate primal recovery, marginal feasibility, stationarity, objective agreement, and complex derivatives independently.
+- [x] Keep block PDHG/chordal and Lanczos extensions experimental until their own formulation, equivalence/approximation, and performance gates pass.
 
 **Exit:** a tested dense entropy-QOT capability with documented limits and attribution; no claim of quantum gradient flow, matrix-free scaling, or distributed spectral support without separate evidence.
 

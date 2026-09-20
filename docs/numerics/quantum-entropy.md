@@ -27,6 +27,13 @@ increase coefficient 1e-4; the default initial learning rate is 1 and accepted
 rates are retained. A machine-precision allowance is used in the line search.
 Unsuccessful search returns status 5 without accepting a failed trial.
 
+A scalar identity component is removed from the cost before spectral recovery
+and optimization, then restored only to the reported objectives. Large constant
+cost offsets therefore do not dominate Armijo comparisons or erase the dual
+updates. The separately computed gap remains useful when subtracting the two
+large reported objectives would lose precision. Precision already lost when
+constructing an input with a large offset cannot be recovered by the solver.
+
 Success requires both the largest absolute marginal entry residual and absolute
 primal-dual difference at or below tolerance, plus finite values. Recovered G
 is PSD and trace one by construction, but these facts do not certify the

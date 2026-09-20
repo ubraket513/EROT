@@ -45,6 +45,22 @@ def _gauge(a: jax.Array) -> jax.Array:
     return a - jnp.trace(a).real / a.shape[0] * jnp.eye(a.shape[0], dtype=a.dtype)
 
 
+def _checked_count(value: jax.Array) -> tuple[jax.Array, jax.Array]:
+    """Check bounds before narrowing; float32 rounds int32 max up to 2**31."""
+    if jnp.issubdtype(value.dtype, jnp.floating):
+        valid = jnp.isfinite(value) & (value == jnp.floor(value)) & (value < 2**31)
+    elif jnp.issubdtype(value.dtype, jnp.integer):
+        valid = (
+            jnp.ones_like(value, dtype=jnp.bool_)
+            if jnp.iinfo(value.dtype).max <= 2**31 - 1
+            else value <= 2**31 - 1
+        )
+    else:
+        raise ValueError("iteration controls must be real integer-valued scalars")
+    valid = valid & (value >= 0)
+    return jnp.where(valid, value, 0).astype(jnp.int32), valid
+
+
 def entropy_dual(
     cost: jax.Array,
     marginal_a: jax.Array,
@@ -59,11 +75,14 @@ def entropy_dual(
     Requires valid Hermitian inputs and positive epsilon.
     """
     lifted = partial_trace_adjoint(duals)
-    coupling, logz = gibbs_state(lifted - cost, epsilon)
+    shift = jnp.sum(jnp.diag(cost).real / cost.shape[0])
+    centered_cost = cost - shift * jnp.eye(cost.shape[0], dtype=cost.dtype)
+    coupling, logz = gibbs_state(lifted - centered_cost, epsilon)
     value = (
         _inner(marginal_a, duals[0])
         + _inner(marginal_b, duals[1])
         - epsilon * (logz + 1)
+        + shift
     )
     a, b = partial_traces(coupling, (marginal_a.shape[0], marginal_b.shape[0]))
     return value, coupling, (marginal_a - a, marginal_b - b)
@@ -117,8 +136,8 @@ def solve_quantum_entropy(
         valid = valid & (jnp.linalg.eigvalsh(marginal).min() > 0)
     for scalar in (eps, tol, rate):
         valid = valid & jnp.isfinite(scalar) & (scalar > 0)
-    valid = valid & jnp.isfinite(budget) & (budget >= 0) & (budget <= 2**31 - 1)
-    valid = valid & (budget == jnp.floor(budget))
+    budget, budget_valid = _checked_count(budget)
+    valid = valid & budget_valid
     if state is None:
         state = QuantumEntropyState(
             jnp.zeros_like(a),
@@ -140,17 +159,21 @@ def solve_quantum_entropy(
             coupling=state.coupling.astype(dtype),
             step_size=jnp.asarray(state.step_size, real_dtype),
         )
-    count = jnp.asarray(state.iterations)
-    valid = valid & jnp.isfinite(count) & (count >= 0) & (count == jnp.floor(count))
-    valid = valid & (count <= 2**31 - 1 - budget)
+    count, count_valid = _checked_count(jnp.asarray(state.iterations))
+    fits = budget <= 2**31 - 1 - count
+    valid = valid & count_valid & fits
     valid = valid & jnp.isfinite(state.step_size) & (state.step_size > 0)
     for dual in (state.dual_a, state.dual_b):
         valid = valid & jnp.isfinite(dual).all()
         valid = valid & jnp.allclose(
             dual, dual.conj().T, rtol=domain_tol, atol=domain_tol
         )
-    state = state._replace(iterations=count.astype(jnp.int32))
-    stop = state.iterations + budget.astype(jnp.int32)
+    state = state._replace(iterations=count)
+    stop = count + jnp.where(fits, budget, 0)
+    # A scalar identity shift changes only the objective. Remove it before
+    # forming spectral slacks or Armijo differences, not after eigendecomposition.
+    cost_shift = jnp.sum(jnp.diag(cost).real / (n * m))
+    cost = cost - cost_shift * jnp.eye(n * m, dtype=dtype)
     # Invalid epsilon is reported below, while avoiding an unnecessary divide by zero.
     safe_eps = jnp.where(jnp.isfinite(eps) & (eps > 0), eps, 1)
 
@@ -242,4 +265,10 @@ def solve_quantum_entropy(
         )
 
     state, diag, _ = jax.lax.while_loop(condition, update, (state, diag, gradients))
+    diag = diag._replace(primal=diag.primal + cost_shift, dual=diag.dual + cost_shift)
+    finite = jnp.isfinite(diag.primal) & jnp.isfinite(diag.dual)
+    diag = diag._replace(
+        error=jnp.where(finite, diag.error, jnp.inf),
+        status=jnp.where(valid & ~finite, NUMERICAL_FAILURE, diag.status),
+    )
     return state, diag

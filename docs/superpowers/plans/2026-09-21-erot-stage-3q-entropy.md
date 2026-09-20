@@ -39,15 +39,15 @@ gibbs_state(matrix, epsilon)->(density, log_partition).
 Tensor order is (a,b,a',b'). Recovery uses shifted eigenvalues and softmax;
 log_partition is log Tr exp(matrix/epsilon). Dimensions are static.
 
-- [ ] Write independent NumPy index-loop trace tests for complex 2x3 systems,
+- [x] Write independent NumPy index-loop trace tests for complex 2x3 systems,
   adjoint identity real(vdot(X,A*(u,v)))=sum real(vdot(A(X),u,v)),
   pure product state traces, shape failures and stable shifted Gibbs tests.
-- [ ] Run tests/unit/test_quantum_operators.py; expected missing-module failure.
-- [ ] Implement traces using reshape/einsum and adjoint using Kronecker sums.
+- [x] Run tests/unit/test_quantum_operators.py; expected missing-module failure.
+- [x] Implement traces using reshape/einsum and adjoint using Kronecker sums.
   For eigenvalues w and eigenvectors q, use
   p=softmax((w-max(w))/epsilon); density=(q*p)@q.conj().T;
   logZ=max(w)/epsilon+logsumexp((w-max(w))/epsilon).
-- [ ] Run focused tests; expected all pass. Record provenance and commit.
+- [x] Run focused tests; expected all pass. Record provenance and commit.
 
 ## Task 2: pure entropy dual solver
 
@@ -67,15 +67,15 @@ Convergence requires finite values, marginal residual and primal-dual agreement.
 No history allocation. Budget is additional work, including zero; checked int32
 counters. Exact resume requires identical inputs/controls.
 
-- [ ] Write diagonal reference reduced to independently solved classical
+- [x] Write diagonal reference reduced to independently solved classical
   entropic transport; zero-cost product optimum including entropy constant;
   complex noncommuting reference via SciPy optimization with separately coded
   Kronecker sums/eigh; finite-difference complex Hermitian directional derivative.
-- [ ] Add invalid/nonfinite, singular-marginal, zero/one budget, JIT, batched
+- [x] Add invalid/nonfinite, singular-marginal, zero/one budget, JIT, batched
   and exact-resume tests. Run before implementation; expected missing solver.
-- [ ] Implement the stated state machine with fixed-shape device loops and
+- [x] Implement the stated state machine with fixed-shape device loops and
   status codes compatible with the shared core; line search failure explicit.
-- [ ] Run focused reference/unit tests; expected all pass. Commit.
+- [x] Run focused reference/unit tests; expected all pass. Commit.
 
 ## Task 3: host integration, example and scientific contracts
 
@@ -85,20 +85,20 @@ Host combination: problem='quantum', regularizer='von_neumann', method='dual'.
 Keep existing combinations and result fields. Invalid core status must not
 appear converged in the host result.
 
-- [ ] Add host/CLI invocation tests and unsupported-combination failures.
+- [x] Add host/CLI invocation tests and unsupported-combination failures.
   Run before adapter; expected new combination rejected.
-- [ ] Add adapter and runnable complex example with explicit epsilon and
+- [x] Add adapter and runnable complex example with explicit epsilon and
   feasibility reporting. Document objective constants, support restriction,
   full dense eigensolve/memory cost, dtype and resume contracts.
-- [ ] Run host tests and example; expected success with residual within tolerance.
+- [x] Run host tests and example; expected success with residual within tolerance.
   Update QOTLib attribution/assessment to distinguish historical audit from
   accepted implementation. Commit.
 
 ## Task 4: release checks and final review
 
-- [ ] Run full CPU pytest, Ruff check/format, built artifact checks and installed
+- [x] Run full CPU pytest, Ruff check/format, built artifact checks and installed
   base-only entropy API smoke outside checkout; expected green.
-- [ ] Request one fresh final review under executing-plans; reproduce and fix
+- [x] Request one fresh final review under executing-plans; reproduce and fix
   material findings with regressions and green suite.
-- [ ] Record actual evidence and unexecuted GPU gates; mark roadmap Stage 3Q
+- [x] Record actual evidence and unexecuted GPU gates; mark roadmap Stage 3Q
   complete only when its requirements hold. Commit and continue Stage 4.
