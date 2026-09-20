@@ -36,7 +36,21 @@ def solve(
     """
 
     enable_requested_precision(config.dtype)
-    device = resolve_device(config.device)
+    supplied_devices = set()
+    if config.device.strip().lower() == "auto":
+        for value in (cost, *marginals):
+            if isinstance(value, jax.Array):
+                supplied_devices.update(value.devices())
+        if len(supplied_devices) > 1:
+            raise ValueError(
+                "auto placement is ambiguous across devices; select a device "
+                "explicitly or use the pure erot.solvers API"
+            )
+    device = (
+        next(iter(supplied_devices))
+        if supplied_devices
+        else resolve_device(config.device)
+    )
 
     start = time.perf_counter()
     if problem == "classical":

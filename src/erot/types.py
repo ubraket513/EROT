@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Literal
 
@@ -22,6 +23,16 @@ class SolverConfig:
     device: DeviceSpec = "auto"
 
     def __post_init__(self) -> None:
+        if not all(
+            math.isfinite(v)
+            for v in (self.epsilon, self.tolerance, self.max_iterations)
+        ):
+            raise ValueError("solver controls must be finite")
+        if (
+            self.max_iterations != int(self.max_iterations)
+            or self.max_iterations > 2**31 - 1
+        ):
+            raise ValueError("max_iterations must be an integer fitting int32")
         if self.epsilon <= 0:
             raise ValueError("epsilon must be greater than zero")
         if self.tolerance <= 0:

@@ -58,10 +58,10 @@ def validate_classical(
         raise ValueError("all marginals must have the same total mass")
 
     dtype = real_dtype(precision)
-    cost_array = jax.device_put(jnp.asarray(host_cost, dtype=dtype), device)
+    cost_array = jax.device_put(jnp.asarray(cost, dtype=dtype), device)
     marginal_arrays = tuple(
         jax.device_put(jnp.asarray(marginal, dtype=dtype), device)
-        for marginal in host_marginals
+        for marginal in marginals
     )
     return cost_array, marginal_arrays
 

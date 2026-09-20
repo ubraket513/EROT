@@ -4,22 +4,8 @@ from __future__ import annotations
 
 import jax
 import jax.numpy as jnp
-from jax.scipy.special import logsumexp
 
-
-def _broadcast_vector(vector: jax.Array, axis: int, rank: int) -> jax.Array:
-    shape = [1] * rank
-    shape[axis] = vector.shape[0]
-    return vector.reshape(shape)
-
-
-def _log_coupling(
-    cost: jax.Array, log_scalings: tuple[jax.Array, ...], epsilon: jax.Array
-) -> jax.Array:
-    result = -cost / epsilon
-    for axis, scaling in enumerate(log_scalings):
-        result = result + _broadcast_vector(scaling, axis, cost.ndim)
-    return result
+from .solvers import materialize_plan, solve_sinkhorn
 
 
 def _classical_error(
@@ -44,46 +30,11 @@ def shannon_sinkhorn(
 ) -> tuple[jax.Array, jax.Array, jax.Array]:
     """Solve dense multi-marginal Shannon EROT with log-domain Sinkhorn updates."""
 
-    dtype = cost.dtype
-    log_scalings = tuple(jnp.zeros_like(marginal) for marginal in marginals)
-    initial_state = (
-        jnp.asarray(0, dtype=jnp.int32),
-        jnp.asarray(jnp.inf, dtype=dtype),
-        log_scalings,
+    state, diagnostics = solve_sinkhorn(
+        cost, marginals, epsilon, tolerance, max_iterations
     )
-    all_axes = tuple(range(cost.ndim))
-
-    def condition(
-        state: tuple[jax.Array, jax.Array, tuple[jax.Array, ...]],
-    ) -> jax.Array:
-        iteration, error, _ = state
-        return jnp.logical_and(iteration < max_iterations, error > tolerance)
-
-    def body(
-        state: tuple[jax.Array, jax.Array, tuple[jax.Array, ...]],
-    ) -> tuple[jax.Array, jax.Array, tuple[jax.Array, ...]]:
-        iteration, _, current_scalings = state
-        updated_scalings = list(current_scalings)
-        for axis, marginal in enumerate(marginals):
-            log_values = _log_coupling(cost, tuple(updated_scalings), epsilon)
-            reduction_axes = tuple(index for index in all_axes if index != axis)
-            log_marginal = logsumexp(log_values, axis=reduction_axes)
-            log_target = jnp.where(marginal > 0, jnp.log(marginal), -jnp.inf)
-            updated_scalings[axis] = jnp.where(
-                marginal > 0,
-                updated_scalings[axis] + log_target - log_marginal,
-                -jnp.inf,
-            )
-
-        coupling = jnp.exp(_log_coupling(cost, tuple(updated_scalings), epsilon))
-        error = _classical_error(coupling, marginals)
-        return iteration + 1, error, tuple(updated_scalings)
-
-    iterations, error, final_scalings = jax.lax.while_loop(
-        condition, body, initial_state
-    )
-    coupling = jnp.exp(_log_coupling(cost, final_scalings, epsilon))
-    return coupling, error, iterations
+    coupling = materialize_plan(cost, state.potentials, epsilon)
+    return coupling, diagnostics.error, diagnostics.iterations
 
 
 def _positive_part_thresholds(z: jax.Array, targets: jax.Array) -> jax.Array:

@@ -35,3 +35,21 @@ def test_cpu_gpu_classical_agreement(dtype: str, atol: float) -> None:
     cpu, gpu = run("cpu"), run("gpu")
     assert cpu.converged and gpu.converged
     np.testing.assert_allclose(cpu.coupling, gpu.coupling, atol=atol, rtol=atol)
+
+
+@pytest.mark.gpu
+@pytest.mark.skipif(not GPU_AVAILABLE, reason="CUDA-enabled JAX is unavailable")
+def test_auto_preserves_explicit_cpu_and_gpu_arrays():
+    for device in (jax.devices("cpu")[0], jax.devices("gpu")[0]):
+        cost = jax.device_put(np.array([[0.0, 1.0], [1.0, 0.0]]), device)
+        marginal = jax.device_put(np.array([0.4, 0.6]), device)
+        result = erot.solve(
+            cost,
+            [marginal, marginal],
+            problem="classical",
+            regularizer="shannon",
+            method="sinkhorn",
+            config=erot.SolverConfig(0.5, device="auto"),
+        )
+        assert result.converged
+        assert result.coupling.devices() == {device}

@@ -68,3 +68,39 @@ def test_rejects_unsupported_solver_combination() -> None:
             method="sinkhorn",
             config=config(),
         )
+
+
+@pytest.mark.parametrize("field", ["epsilon", "tolerance", "max_iterations"])
+@pytest.mark.parametrize("value", [float("nan"), float("inf")])
+def test_config_rejects_nonfinite_controls(field, value):
+    with pytest.raises(ValueError):
+        erot.SolverConfig(**{"epsilon": 1.0, field: value})
+
+
+def test_config_rejects_fractional_iteration_limit():
+    with pytest.raises(ValueError):
+        erot.SolverConfig(epsilon=1.0, max_iterations=1.5)
+
+
+def test_auto_device_preserves_explicit_array_placement(monkeypatch):
+    import jax
+
+    import erot.api
+
+    device = jax.devices("cpu")[0]
+    cost = jax.device_put(np.zeros((2, 2)), device)
+    marginal = jax.device_put(np.array([0.5, 0.5]), device)
+
+    def unexpected_resolution(spec):
+        raise AssertionError("explicit input placement should select the device")
+
+    monkeypatch.setattr(erot.api, "resolve_device", unexpected_resolution)
+    result = erot.solve(
+        cost,
+        [marginal, marginal],
+        problem="classical",
+        regularizer="shannon",
+        method="sinkhorn",
+        config=config(device="auto"),
+    )
+    assert result.coupling.devices() == {device}
