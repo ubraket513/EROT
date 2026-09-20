@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: reference inspection and proposed adaptation; no YACHT code was copied into EROT.
+Status: the selected layout, packaging, style, testing and contributor conventions have been adopted. Native build systems and cluster containers remain conditional on selected capabilities/site validation. No YACHT code was copied into EROT.
 
 Reference supplied by the user: `git@github.com:ubraket513/YACHT.git`.
 

@@ -98,7 +98,8 @@ python benchmarks/native_gate.py compare baseline.json candidate.json \
 
 The first example predicts 2× **conditionally from synthetic assumptions**.
 `screen` exits zero for a valid calculation, even below the admission threshold.
-`compare` accepts existing schema-version-2 records from the baseline tools,
+`compare` accepts one schema-version-2 case record per file from the baseline
+tools (extract the case from a multi-case report first),
 checks numerical convergence/objective agreement and matched science/runtime/
 hardware, requires at least seven samples, and exits one when the measurement
 gate fails (invalid input exits two). Its JSON includes SHA256 hashes of evidence

@@ -57,19 +57,19 @@ pyproject.toml, MANIFEST.in, requirements/base-minimum.txt,
 Files: README.md, CHANGELOG.md, docs/migration-0.2.md, docs/support-matrix.md,
 docs/development.md, docs/architecture/source-provenance.md.
 
-- [ ] Document actual CPU/version evidence, GPU target versus validation status,
+- [x] Document actual CPU/version evidence, GPU target versus validation status,
   distributed experimental runtime, objectives, precision, transformations,
   capacity, unsupported derivatives and quantum spectral limits.
-- [ ] Map legacy jko_lab PDHG/Sinkhorn/functionals/history into erot.flows and
+- [x] Map legacy jko_lab PDHG/Sinkhorn/functionals/history into erot.flows and
   full state/checkpoints. Record mass-volume/cost-factor/prox/termination changes.
-- [ ] Map adopted QOTLib operators/spectral entropy/dual methods; state unequal
+- [x] Map adopted QOTLib operators/spectral entropy/dual methods; state unequal
   dimensions, positive-definite marginal restriction, conjugate correction,
   non-adopted chordal/Lanczos/backends and provenance/license locations.
-- [ ] Update README0.2 features, base/GPU installation, runnable examples and
+- [x] Update README0.2 features, base/GPU installation, runnable examples and
   experiment/distributed documentation links; remove stale0.1 scalability claims.
-- [ ] Document reproducible benchmark/profile/native-admission tools, future GPU
+- [x] Document reproducible benchmark/profile/native-admission tools, future GPU
   commands, configurable Slurm launch and actual unexecuted gates.
-- [ ] Account for retained experimental code and preserved historical repositories;
+- [x] Account for retained experimental code and preserved historical repositories;
   do not delete capabilities merely to make packaging simpler. Commit docs.
 
 ## Task 3: release evidence, review and completion audit

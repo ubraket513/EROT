@@ -27,8 +27,9 @@ python benchmarks/benchmark_solvers.py \
   --output benchmark-results/candidate.json
 ```
 
-Only consider a custom Pallas/CuTe/C++ kernel after the trace identifies an
-unsupported operation consuming at least 30% of total runtime. Keep it only if
+Consider a custom Pallas/CuTe/C++ kernel only after profiling identifies a
+bottleneck (initial screening: at least 30% of total runtime), or a documented
+required capability justifies one. Keep it only if
 it improves full-solve warm time by at least 1.5x or peak memory by at least
 25% on the reference workload.
 
@@ -61,3 +62,17 @@ Use `gpu` explicitly on an allocated CUDA machine; unavailable GPU execution
 fails instead of being counted as CPU validation. See
 [quantum feasibility](../docs/performance/quantum-feasibility.md) for the workload
 ladder, memory accounting, native backend boundary and unexecuted hardware gates.
+
+Integrated release tools and evidence:
+
+- [Blocked classical solves](../docs/performance/blocked-transport.md): compiler
+  allocation inspection and synchronized dense/blocked comparisons.
+- [Independent experiment throughput](../docs/numerics/experiments.md):
+  `experiment_throughput.py`, including startup, compilation and checkpoint costs.
+- [Distributed solves](../docs/performance/distributed-transport.md):
+  `distributed_sinkhorn.py`, rank-local reports and optional profiler traces.
+- [Native admission](../docs/performance/native-decision.md): `native_gate.py`,
+  conditional Amdahl screening and matched full-solve measurement gates.
+
+Actual GPU/Slurm results remain unmeasured. Each protocol identifies which CPU
+measurements exist and which hardware gates still need an allocation.

@@ -1,13 +1,14 @@
 # Source provenance
 
-Recorded during Stage 0 on 2026-09-21. EROT remains an MIT-licensed project;
-this stage imports no algorithm source from the reference repositories.
+Initial inventory recorded during Stage 0 on 2026-09-21; integration additions
+are recorded below. Original EROT code retains MIT terms; adapted flow and
+quantum components use Apache-2.0 with distribution metadata MIT AND Apache-2.0.
 
 | Source | Inspected revision | License and role |
 |---|---|---|
 | EROT | `424c4ede55f67aa805c4f7914133a5a7bc1b9155` | MIT, existing package and artifacts |
-| numerical-gradient-flows | `0c6f5b50aee9ab5378970e28d700ab8fd193f554` | Apache-2.0, confirmed by the user on 2026-09-21; future flow algorithm source |
-| QOTLib | `bd534c61aeae082892b9b2421db153beb8e5c804` | Apache-2.0, confirmed by the user on 2026-09-21; future quantum algorithm source |
+| numerical-gradient-flows | `0c6f5b50aee9ab5378970e28d700ab8fd193f554` | Apache-2.0, confirmed by the user on 2026-09-21; adopted flow algorithm source (see Stage 3F below) |
+| QOTLib | `bd534c61aeae082892b9b2421db153beb8e5c804` | Apache-2.0, confirmed by the user on 2026-09-21; adopted quantum contracts (see Stage 3Q below) |
 | YACHT | `48c86a09dee58f693f1223eb2b1a77764a62d9bd` | Engineering reference supplied by the user; no source copied |
 
 The original EROT checkout was on `main` with no tracked modifications.
@@ -66,8 +67,7 @@ PDHG with the actual coupled operator norm, and explicit feasibility and
 stationarity termination. Entropy prox uses a newly implemented log-coordinate
 root solve instead of the historical overflow-prone Lambert-W expression.
 Functionals use explicit nonnegative cell masses and volume-aware entropy.
-The original checkout remains unchanged. QOTLib algorithm adaptation is still
-a subsequent stage, with separate attribution required when added.
+The original checkout remains unchanged. QOTLib adaptation and its attribution are recorded in the next section.
 
 ## Stage 3Q operator adoption
 

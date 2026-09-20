@@ -15,9 +15,12 @@ needs only this repository and its declared development dependencies.
 | `archive/legacy-erot/` | Byte-preserved historical demonstrations and generated outputs |
 | `archive/manifest.json` | Original paths, destinations, hashes, sizes, and source revision |
 
-New reference tests will use `tests/reference/`. Solver, geometry, flow,
-operator, runtime, experiment, and HPC modules are introduced when their
-implementation arrives; empty speculative packages are not part of cleanup.
+Independent numerical references live under `tests/reference/`; fresh-process
+distributed probes under `tests/distributed/`. Active solver, geometry, flow,
+operator and runtime modules live under `src/erot/`. `experiments/configs/`
+contains reproducible workloads; `hpc/` holds configurable launch templates,
+and `requirements/` distinguishes base-minimum and experimental distributed
+CPU runtimes. See the [support matrix](../support-matrix.md).
 
 Optional local checkouts `numerical-gradient-flows/`, `QOTLib/`, and
 `SDP-Simulation/` are ignored by the parent repository and excluded from
