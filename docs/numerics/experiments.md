@@ -78,3 +78,25 @@ The initial implementation accepts only the same process/device topology and
 runtime/source identity. It stages checkpoint arrays on host; transfer and
 host-memory costs are part of capacity planning. Resharded restart is not
 advertised. Historical jko_lab/QOTLib checkouts and SDPLab are not dependencies.
+
+## Independent worker launcher
+
+    erot-launch experiments/configs/classical-blocked.json experiments/configs/quantum-entropy.json --output-root results/batch --device cpu --workers 2 --cpu-budget 8
+
+The parent uses only the standard library. It assigns disjoint CPU affinity and
+thread environments before fresh child processes import numerical libraries.
+On GPU, CUDA_VISIBLE_DEVICES supplies the allocated opaque tokens; by default
+one worker uses each token. An explicit --gpu-devices list must be a subset of
+that visible allocation. If visibility is absent outside a scheduler, provide
+an explicit list of devices you have allocated. No node-wide GPU discovery is
+performed. CPU affinity bounds execution resources; BLAS/OpenMP environment
+values are not advertised as universal JAX thread-pool controls.
+
+Each launch writes `.launches/<session>/execution.json` and `scientific.json`.
+Execution reports contain resource assignment, process exit codes, per-process
+wall time, total wall time and completed-run throughput. Scientific values are
+separate. Per-run logs have unique session filenames. Duplicate identities in
+one launch fail before workers start; concurrent launchers are protected by the
+worker's run ownership lock. A failed child cannot be reported successful using
+a stale result file. Resume requires --resume and the worker's compatibility
+checks still apply. See [Slurm templates and profiles](../../hpc/README.md).
