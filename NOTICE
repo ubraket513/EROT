@@ -1,0 +1,22 @@
+EROT
+
+The original EROT code is distributed under the MIT license in LICENSE.txt.
+
+Gradient-flow components under src/erot/flows and src/erot/optim are distributed
+under Apache-2.0 (LICENSES/Apache-2.0.txt). Their development follows the
+numerical-gradient-flows project by Dohyoung Ko:
+https://github.com/ubraket513/numerical-gradient-flows
+Revision: 0c6f5b50aee9ab5378970e28d700ab8fd193f554
+Reference paths: src/jko_lab/pdhg_jko.py, src/jko_lab/sinkhorn_jko.py,
+src/jko_lab/lambert.py.
+
+The source owner confirmed Apache-2.0 reuse rights on 2026-09-21. The inspected
+historical checkout contained no separate LICENSE or NOTICE file. Its template
+package metadata is preserved in that checkout; it is not copied as license
+authority for these components.
+
+Changes include pure JAX state, explicit objective and cell-volume conventions,
+stable entropy proximal evaluation, the full coupled-operator PDHG step bound,
+stationarity/feasibility diagnostics, exact resume state, and integration with
+EROT's shared optimal-transport core. See docs/architecture/source-provenance.md
+and the numerical audit documents for scope and mathematical corrections.

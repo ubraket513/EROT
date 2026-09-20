@@ -50,3 +50,21 @@ subsystem size 2. Raw test output, environment versions, and before/after JSON
 records are local artifacts under `benchmark-results/stage-0/`.
 See the [Stage 0 validation record](../development/stage-0-validation.md) for
 the final outcome. No GPU or cluster performance is inferred from these checks.
+
+## Stage 3F flow integration
+
+The new `src/erot/flows/` and `src/erot/optim/` components carry Apache-2.0
+SPDX identifiers. The distribution records `MIT AND Apache-2.0`, retaining the
+original EROT MIT terms and adding the full Apache license plus `NOTICE` to
+both wheel and sdist. No original copyright or license file is removed.
+
+The reference flow revision above records Dohyoung Ko as the last author of
+`src/jko_lab/pdhg_jko.py`; its origin is
+`git@github.com:ubraket513/numerical-gradient-flows.git`. The adaptation replaces
+the historical class/function split with complete pure JAX state, dual-first
+PDHG with the actual coupled operator norm, and explicit feasibility and
+stationarity termination. Entropy prox uses a newly implemented log-coordinate
+root solve instead of the historical overflow-prone Lambert-W expression.
+Functionals use explicit nonnegative cell masses and volume-aware entropy.
+The original checkout remains unchanged. QOTLib algorithm adaptation is still
+a subsequent stage, with separate attribution required when added.

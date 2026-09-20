@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Discrete nonnegative cell-mass energies with value, gradient and proximal maps."""
 
 from __future__ import annotations

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Stable elementwise proximal maps used by discrete gradient flows."""
 
 from __future__ import annotations

@@ -3,6 +3,8 @@ graft tests
 graft benchmarks
 graft docs
 include LICENSE.txt
+include LICENSES/Apache-2.0.txt
+include NOTICE
 include CONTRIBUTING.md
 include ruff.toml
 prune archive

@@ -43,6 +43,10 @@ def test_wheel_contains_only_package_and_distribution_metadata(
         first = PurePosixPath(name).parts[0]
         assert first == "erot" or first.endswith(".dist-info"), name
     assert any(name.endswith(".dist-info/licenses/LICENSE.txt") for name in names)
+    assert any(
+        name.endswith(".dist-info/licenses/LICENSES/Apache-2.0.txt") for name in names
+    )
+    assert any(name.endswith(".dist-info/licenses/NOTICE") for name in names)
     assert any(name.endswith(".dist-info/entry_points.txt") for name in names)
     assert not any(name.endswith((".pt", ".png", ".ipynb", ".pyc")) for name in names)
 
@@ -62,6 +66,8 @@ def test_sdist_excludes_local_repositories_and_generated_data(
     assert {
         "pyproject.toml",
         "LICENSE.txt",
+        "LICENSES/Apache-2.0.txt",
+        "NOTICE",
         "src/erot/__init__.py",
         "src/erot/experimental/classical.py",
         "tests/unit/test_api.py",
