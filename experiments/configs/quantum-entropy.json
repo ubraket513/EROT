@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "name": "quantum-entropy",
+  "kind": "quantum",
+  "backend": "entropy",
+  "n": 2,
+  "m": 3,
+  "seed": 42,
+  "epsilon": 0.5,
+  "tolerance": 0.00000001,
+  "chunk_size": 10,
+  "max_iterations": 10000
+}

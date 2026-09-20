@@ -7,8 +7,8 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[test,plot,dev]'
 python -m pytest
-ruff check src tests benchmarks examples
-ruff format --check src tests benchmarks examples
+ruff check src tests benchmarks examples experiments
+ruff format --check src tests benchmarks examples experiments
 ```
 
 The package uses `src/erot/`; install it before running tests. Do not add

@@ -40,6 +40,7 @@ dev = [
 
 [project.scripts]
 erot = "erot.cli:main"
+erot-run = "erot.experiments:main"
 
 [project.urls]
 Homepage = "https://github.com/kodh49/EROT"

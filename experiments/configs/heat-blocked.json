@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "heat-blocked",
+  "kind": "flow",
+  "backend": "blocked",
+  "energy": "entropy",
+  "n": 16,
+  "epsilon": 0.002,
+  "time_step": 0.02,
+  "steps": 2,
+  "chunk_size": 1,
+  "block_size": 8,
+  "tolerance": 0.000001,
+  "max_iterations": 2000,
+  "snapshot_stride": 1
+}

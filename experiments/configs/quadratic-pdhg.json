@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "quadratic-pdhg",
+  "kind": "flow",
+  "backend": "pdhg",
+  "energy": "quadratic",
+  "n": 8,
+  "seed": 12,
+  "time_step": 0.3,
+  "steps": 3,
+  "chunk_size": 1,
+  "tolerance": 0.000001,
+  "max_iterations": 20000,
+  "snapshot_stride": 1
+}

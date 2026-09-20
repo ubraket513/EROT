@@ -12,8 +12,8 @@ successful run with newer versions.
 python -m pytest
 python -m pytest tests/unit tests/reference -m reference
 python -m pytest tests/integration
-ruff check src tests benchmarks examples
-ruff format --check src tests benchmarks examples
+ruff check src tests benchmarks examples experiments
+ruff format --check src tests benchmarks examples experiments
 ```
 
 The ordinary suite includes GPU tests that explicitly skip without CUDA.

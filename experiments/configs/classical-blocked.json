@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "classical-blocked",
+  "kind": "classical",
+  "backend": "blocked",
+  "n": 64,
+  "m": 96,
+  "features": 3,
+  "seed": 42,
+  "epsilon": 0.3,
+  "tolerance": 0.00000001,
+  "chunk_size": 25,
+  "max_iterations": 10000,
+  "block_size": 32
+}

@@ -16,8 +16,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install 'ruff>=0.9'
-      - run: ruff check src tests benchmarks examples
-      - run: ruff format --check src tests benchmarks examples
+      - run: ruff check src tests benchmarks examples experiments
+      - run: ruff format --check src tests benchmarks examples experiments
 
   cpu:
     runs-on: ubuntu-latest
