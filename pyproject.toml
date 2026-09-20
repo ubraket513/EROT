@@ -32,6 +32,11 @@ test = [
   "pytest>=8",
   "scipy>=1.11",
 ]
+dev = [
+  "build>=1.2",
+  "pytest-cov>=5",
+  "ruff>=0.9",
+]
 
 [project.scripts]
 erot = "erot.cli:main"
@@ -50,4 +55,6 @@ testpaths = ["tests"]
 markers = [
   "reference: compares against an optional independent numerical solver",
   "gpu: requires a CUDA-enabled JAX installation",
+  "packaging: inspects artifacts selected by EROT_DIST_DIR",
+  "distributed: requires an explicitly configured distributed runtime",
 ]

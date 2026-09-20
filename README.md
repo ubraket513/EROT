@@ -13,7 +13,7 @@ quantum optimal transport. Its stable API currently provides:
 CPU-only installation:
 
 ```bash
-python -m pip install -e .
+python -m pip install .
 ```
 
 For NVIDIA GPUs, install the extra matching the machine's driver/toolchain:
@@ -93,3 +93,25 @@ are outside the 0.1 release.
 
 See [the migration guide](docs/migration-0.1.md) when upgrading from the legacy
 `eot` package and PyTorch `.pt` files.
+
+## Development
+
+The package lives under `src/erot/`. For an editable development installation:
+
+```bash
+python -m pip install -e '.[test,plot,dev]'
+python -m pytest
+ruff check src tests benchmarks
+ruff format --check src tests benchmarks
+```
+
+See [contributing](CONTRIBUTING.md), [distribution checks](docs/development.md),
+and [the repository map](docs/development/repository-map.md).
+Historical demo outputs and the old notebook are preserved in
+[`archive/`](archive/README.md), with a hash manifest, and excluded from
+distributions. Local reference repositories are not installation requirements.
+
+The staged integration targets Hopper-or-newer GPUs with configurable cluster
+resources and a CPU reference path. See [the roadmap](docs/superpowers/plans/2026-09-21-erot-flows-hpc-roadmap.md)
+for planned flow, quantum, and distributed capabilities; these are not claims
+about features already present in version 0.1.0.

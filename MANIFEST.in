@@ -3,6 +3,8 @@ graft tests
 graft benchmarks
 graft docs
 include LICENSE.txt
+include CONTRIBUTING.md
+include ruff.toml
 prune archive
 prune numerical-gradient-flows
 prune QOTLib

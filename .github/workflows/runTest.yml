@@ -4,8 +4,22 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install 'ruff>=0.9'
+      - run: ruff check src tests benchmarks
+      - run: ruff format --check src tests benchmarks
+
+  cpu:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -18,11 +32,67 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install EROT and test dependencies
-        run: python -m pip install --upgrade pip && python -m pip install '.[test,plot]'
-      - name: Run tests
-        run: python -m pytest
-      - name: Smoke-test the installed CLI
-        run: erot --help
+        run: python -m pip install '.[test,plot,dev]'
+      - name: CPU unit and independent reference tests
+        env:
+          JAX_PLATFORMS: cpu
+        run: python -m pytest tests/unit --cov=erot --cov-report=xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: coverage.xml
+
+  workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install '.[test,plot]'
+      - name: CLI and data workflows
+        env:
+          JAX_PLATFORMS: cpu
+        run: python -m pytest tests/integration
+
+  packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install 'build>=1.2' 'pytest>=8'
+      - name: Build a wheel directly from the checkout
+        run: python -m build --wheel --outdir dist/direct
+      - name: Build an sdist and a wheel from that sdist
+        run: python -m build
+      - name: Inspect distribution contents
+        env:
+          EROT_DIST_DIR: dist
+        run: python -m pytest tests/packaging
+      - name: Verify both wheels in clean base-only environments
+        env:
+          JAX_PLATFORMS: cpu
+        shell: bash
+        run: |
+          cp tests/packaging/installed_smoke.py "$RUNNER_TEMP/erot-installed-smoke.py"
+          for flavor in direct rebuilt; do
+            check_env="$RUNNER_TEMP/erot-$flavor"
+            python -m venv "$check_env"
+            if [ "$flavor" = direct ]; then
+              wheels=( "$GITHUB_WORKSPACE"/dist/direct/*.whl )
+            else
+              wheels=( "$GITHUB_WORKSPACE"/dist/*.whl )
+            fi
+            test "${#wheels[@]}" -eq 1
+            "$check_env/bin/python" -m pip install "${wheels[0]}"
+            (cd "$RUNNER_TEMP" && "$check_env/bin/python" -I erot-installed-smoke.py)
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: distributions
+          path: dist/
 
   benchmark-smoke:
     runs-on: ubuntu-latest
@@ -35,6 +105,8 @@ jobs:
       - name: Install EROT
         run: python -m pip install .
       - name: Run small reproducible CPU benchmark
+        env:
+          JAX_PLATFORMS: cpu
         run: >-
           python benchmarks/benchmark_solvers.py
           --device cpu
