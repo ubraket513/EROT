@@ -36,10 +36,7 @@ def peak(record, value, kind="isolated_peak_live_bytes"):
         "measurement_kind": kind,
         "scope": "full_solve",
         "peak_live_bytes": value,
-        **{
-            key: record[key]
-            for key in COMPARISON_FIELDS
-        },
+        **{key: record[key] for key in COMPARISON_FIELDS},
     }
 
 

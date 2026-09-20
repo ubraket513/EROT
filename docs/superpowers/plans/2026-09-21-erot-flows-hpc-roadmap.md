@@ -2,7 +2,7 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: Stages 0–6 software and CPU validation are complete and independently reviewed. Stage 7 is in progress; actual GPU/Slurm gates remain unexecuted. See the stage validation documents under docs/development.
+Status: Stages 0–6 software and CPU validation are complete and independently reviewed. Stage 7 selects JAX without a native component; Stage 8 is next. Actual GPU/Slurm gates remain unexecuted. See the stage validation documents under docs/development.
 
 **Goal:** first clean and restructure EROT, then integrate gradient flows and selected QOTLib algorithms into an openly shareable scientific library for independent experiments and large solves. Target Hopper-or-newer NVIDIA GPUs with configurable resources, preserve a CPU path, and keep SDPLab independent.
 
@@ -204,7 +204,9 @@ Software and CPU validation are complete; see [Stage 6 evidence](../../developme
 
 **Files:** introduce only the selected component under `native/` and a corresponding `src/erot/backends/` adapter, native correctness tests, build configuration, and compatibility documentation. Do not scaffold every possible backend.
 
-**Work:**
+**Decision:** [JAX retained; no native component selected](../../performance/native-decision.md). Conditional screening and measurement tools pass CPU tests. No GPU operation profile exists, so actual candidate measurements below remain conditional and unexecuted. Interface tests apply only after a component is selected. See [Stage 7 evidence](../../development/stage-7-validation.md).
+
+**Work (conditional on a selected candidate):**
 
 - [ ] Calculate a plausible full-solve benefit using the measured runtime fraction and Amdahl's law.
 - [ ] Compare algorithm/representation improvements and existing optimized libraries before writing a new kernel.
