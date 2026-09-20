@@ -100,3 +100,28 @@ one launch fail before workers start; concurrent launchers are protected by the
 worker's run ownership lock. A failed child cannot be reported successful using
 a stale result file. Resume requires --resume and the worker's compatibility
 checks still apply. See [Slurm templates and profiles](../../hpc/README.md).
+
+## Throughput validation
+
+Run the same configuration list with a fixed total CPU budget and fresh output
+roots. The benchmark refuses an existing root, runs worker-count trials
+sequentially, and writes throughput.json after each trial:
+
+    python benchmarks/experiment_throughput.py experiments/configs/classical-blocked.json experiments/configs/quantum-entropy.json --output-root benchmark-results/throughput-cpu --workers 1 2 --cpu-budget 2
+
+For an allocated Hopper-or-newer environment, add --device gpu, set the CPU
+budget to the actual allocation and choose worker counts within the visible GPU
+count. Use --repeats for variability; compare representative workload lists and
+problem sizes before recommending concurrency. A larger throughput can trade
+against per-experiment latency. These commands prepare GPU validation and do
+not imply it has run.
+
+Each report separates first-chunk compile-and-execute, subsequent execution,
+checkpoint duration, worker setup and process wall time. Outside-worker-session
+time includes interpreter/import startup and exit; it is not a pure import
+microbenchmark. Lifetime chunk timing coverage must contain exactly one valid
+event per checkpointed chunk, with finite nonnegative durations. Missing,
+duplicate, malformed or truncated events mark the measurement incomplete.
+Scientific completion remains separate from this timing audit. Measurements
+include fresh compilation for each subprocess and checkpoint overhead, so they
+measure end-to-end experiment throughput rather than warmed kernel throughput.
