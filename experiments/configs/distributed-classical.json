@@ -1,0 +1,16 @@
+{
+  "name": "distributed-classical",
+  "kind": "classical",
+  "backend": "blocked",
+  "n": 257,
+  "m": 383,
+  "features": 3,
+  "seed": 42,
+  "dtype": "float64",
+  "device": "cpu",
+  "epsilon": 0.3,
+  "tolerance": 1e-8,
+  "max_iterations": 10000,
+  "chunk_size": 50,
+  "block_size": 32
+}

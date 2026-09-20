@@ -106,3 +106,39 @@ write failure on only one rank and removes one rank's payload: publication and
 load respectively fail on all participants, preserving the old global pointer
 in the interrupted-save case. These tests use Gloo CPU collectives; they do not
 validate CUDA/NCCL communication.
+
+## Installed driver and local input generation
+
+    erot-distributed experiments/configs/distributed-classical.json --run-directory results/distributed --device cpu
+
+The CLI selects the platform explicitly with --device (default cpu), overriding
+the configuration device field before identity calculation. Multiprocess launch
+adds --coordinator host:port --processes N --process-id rank on every process;
+initialize_runtime is called before device access. See [Slurm launch notes](../../hpc/README.md).
+
+The driver accepts classical/blocked configurations from the shared schema. Its
+workload generator is distinct from the independent-experiment generator:
+source and target points use NumPy SeedSequence streams indexed by seed, cloud
+and global row index, and marginals are uniform over valid rows. Each process
+generates only its local padded source rows; targets are replicated. A change
+in partitioning does not change valid input points. Generator identity is
+recorded in checkpoint metadata. Input digests combine rank-local array digests;
+only these small digests are gathered, not source arrays or couplings.
+
+All ranks agree on configuration, operational controls, source/runtime identity,
+replicated target identity and restored progress before entering the solve.
+Rank zero holds the global run lock. Changed input, precision, runtime/source or
+topology is rejected on resume. Source revision is observational; exact package
+source content is the compatibility criterion. A deliberately stopped run is
+checkpointed, numerical exhaustion/failure is failed with a nonzero exit, and
+only convergence is completed. Failed states remain available for inspection.
+
+Each chunk synchronizes all participating device work before checkpointing.
+timing.jsonl reports the maximum observed rank duration for each chunk and
+checkpoint phase; first-call compilation is combined with execution, subsequent
+calls reuse the same dynamic-budget signature. result.json reports residual,
+iterations, status, topology and setup/session timings. resources-rank-*.json
+records each process's observed allocation. Scientific output does not include
+a gathered transport plan. Shared-filesystem visibility and process launch
+remain site responsibilities; Python configuration/I/O errors are coordinated
+before the next collective phase.

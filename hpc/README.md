@@ -43,3 +43,36 @@ to one worker and permits explicit `--workers 2`. Resources must fit the actual
 allocation; oversubscription is rejected. Each worker gets disjoint CPU affinity
 and one GPU token. This is independent experiment parallelism, not a distributed
 individual solve.
+
+## One distributed classical solve
+
+The experimental erot-distributed command cooperates across all ranks. Use
+experiments/configs/distributed-classical.json, a shared EROT_RUN_DIRECTORY and
+EROT_CONFIG path. hpc/run_distributed.sbatch starts a bound srun job step;
+hpc/distributed_rank.sh maps SLURM_NTASKS and SLURM_PROCID to explicit JAX process
+arguments. Set EROT_DEVICE=gpu for CUDA (the rank script defaults to gpu), and
+EROT_PYTHON to the installed interpreter. Request the desired resources using
+site flags, e.g. one node, two tasks, one GPU per task and an appropriate number
+of CPUs per task. The numbers are allocation choices, not library limits.
+
+For more than one process, set EROT_COORDINATOR to a reachable host:port on the
+allocated coordinator node before invoking the rank script. The site wrapper
+can derive that hostname from its allocation; choose a free port permitted by
+cluster policy. This template does not guess a network interface or port.
+Every rank must see the same coordinator and shared run path. Proxy/network
+configuration must permit the JAX coordination and collective connections.
+
+srun establishes CPU and GPU visibility before Python imports numerical code.
+The default local device ID is 0 inside each task's visible allocation, suitable
+for one GPU per process; EROT_LOCAL_DEVICE_IDS can specify a comma-separated
+list for another explicitly allocated layout. CUDA_VISIBLE_DEVICES is preserved.
+With one process the rank script omits distributed initialization and uses all
+visible devices, allowing a one-controller/two-GPU validation run.
+
+Pass --stop-after-chunks 1 after the script path to test a deliberate checkpoint
+boundary, then --resume on the next launch with the same configuration/software
+and topology. Do not reuse a run directory for a different topology. Multiple
+ranks share one global ownership lock held by rank zero and publish one complete
+checkpoint manifest. Per-rank resource reports record actual affinity and thread
+settings. Actual Slurm, GPU peer communication and interconnect validation have
+not run. Local CPU tests cover both one-process/two-device and two-process modes.

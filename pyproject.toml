@@ -43,6 +43,7 @@ erot = "erot.cli:main"
 erot-run = "erot.experiments:main"
 erot-launch = "erot.launcher:main"
 erot-array = "erot.slurm:main"
+erot-distributed = "erot.distributed:main"
 
 [project.urls]
 Homepage = "https://github.com/kodh49/EROT"
