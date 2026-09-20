@@ -9,6 +9,7 @@ import jax
 import jax.numpy as jnp
 
 from ..operators.quantum import gibbs_state, partial_trace_adjoint, partial_traces
+from ._controls import _checked_count
 from .state import CONVERGED, INVALID_INPUT, ITERATION_LIMIT, NUMERICAL_FAILURE
 
 LINE_SEARCH_FAILED = 5
@@ -43,22 +44,6 @@ def _inner(a: jax.Array, b: jax.Array) -> jax.Array:
 def _gauge(a: jax.Array) -> jax.Array:
     a = (a + a.conj().T) / 2
     return a - jnp.trace(a).real / a.shape[0] * jnp.eye(a.shape[0], dtype=a.dtype)
-
-
-def _checked_count(value: jax.Array) -> tuple[jax.Array, jax.Array]:
-    """Check bounds before narrowing; float32 rounds int32 max up to 2**31."""
-    if jnp.issubdtype(value.dtype, jnp.floating):
-        valid = jnp.isfinite(value) & (value == jnp.floor(value)) & (value < 2**31)
-    elif jnp.issubdtype(value.dtype, jnp.integer):
-        valid = (
-            jnp.ones_like(value, dtype=jnp.bool_)
-            if jnp.iinfo(value.dtype).max <= 2**31 - 1
-            else value <= 2**31 - 1
-        )
-    else:
-        raise ValueError("iteration controls must be real integer-valued scalars")
-    valid = valid & (value >= 0)
-    return jnp.where(valid, value, 0).astype(jnp.int32), valid
 
 
 def entropy_dual(

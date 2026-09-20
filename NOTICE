@@ -34,3 +34,5 @@ The related src/erot/solvers/quantum_entropy.py adaptation is also Apache-2.0.
 It replaces QOTLib's optimizer driver with bounded JAX loops and complete
 resume state, uses an explicitly trace-constrained entropy conjugate including
 its constant, and checks marginal feasibility and primal-dual agreement.
+The shared checked iteration-control helper in src/erot/solvers/_controls.py
+was extracted from EROT's Apache-2.0 quantum entropy implementation.

@@ -21,7 +21,7 @@ def streamed_logsumexp(geometry, left, right, epsilon, *, block_size=128):
         raise ValueError("block_size must be a positive static integer")
     row_blocks = (n + block_size - 1) // block_size
     column_blocks = (m + block_size - 1) // block_size
-    dtype = jnp.result_type(geometry.dtype, left, right)
+    dtype = jnp.result_type(geometry.dtype, left, right, epsilon)
     output = jnp.full((row_blocks * block_size,), -jnp.inf, dtype)
 
     def row_body(row, output):
