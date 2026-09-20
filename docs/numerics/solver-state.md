@@ -53,3 +53,17 @@ arrays when `device='auto'`. Ambiguous multi-device placement requires an explic
 device or the pure API. Host validation still deliberately inspects inputs;
 use the pure API inside compiled flows. Nonfinite controls and fractional
 iteration caps are rejected instead of silently truncating or failing later.
+
+## Quantum quadratic resume
+
+`erot.solvers.quantum.solve_quantum_quadratic` returns a
+`QuantumDykstraState` containing the coupling, all three Dykstra corrections
+and cumulative sweep count, plus array-valued diagnostics. Pass it back as
+`state=` with identical cost, marginals, epsilon and dtype. A coupling snapshot
+alone is not sufficient; corrections cannot be reused across a changed problem.
+The pure function retains complex marginal information even for real costs.
+At zero work it reports the initial marginal and PSD infeasibility. Initial
+validation and restart diagnostics require additional small/dense spectral
+checks; benchmark this overhead separately from the iterative projection loop.
+The existing quantum dense wrapper uses this core without changing its result
+signature or quadratic objective.
