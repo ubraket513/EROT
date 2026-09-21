@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import tomllib
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -19,7 +22,9 @@ def config(**overrides: object) -> erot.SolverConfig:
 
 
 def test_public_exports() -> None:
-    assert erot.__version__ == "0.1.0"
+    project = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    expected_version = tomllib.loads(project.read_text())["project"]["version"]
+    assert erot.__version__ == expected_version
     assert set(erot.__all__) == {"SolveResult", "SolverConfig", "solve"}
 
 

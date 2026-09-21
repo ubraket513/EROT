@@ -1,23 +1,20 @@
 # Historical gradient-flow audit
 
 Source: numerical-gradient-flows revision
-`0c6f5b50aee9ab5378970e28d700ab8fd193f554`. Its original checkout is unchanged.
+`0c6f5b50aee9ab5378970e28d700ab8fd193f554`. Its original local checkout was removed after integration.
 The audit runs through an explicit source path in a separate CPU environment
 with historical Flax/Optax imports available. EROT does not acquire those as
 mandatory runtime dependencies.
 
-## Reproduction
+## Historical reproduction
 
-```bash
-python -m venv .venv-legacy-audit
-.venv-legacy-audit/bin/python -m pip install -e '.[test]' flax optax
-PYTHONDONTWRITEBYTECODE=1 JAX_PLATFORMS=cpu .venv-legacy-audit/bin/python benchmarks/audit_legacy_flow.py --source-path /path/to/numerical-gradient-flows --output benchmark-results/stage-1/legacy/audit.json
-```
-
-The command intentionally exits nonzero for mismatched, errored, or unavailable
-checks while retaining its JSON report. The report includes the exact input,
-source revision, resolved library versions, values, and exception details.
-These historical failures are not expected failures hidden in the normal suite.
+The one-time audit scripts and original local checkouts were removed after
+integration. The scripts are recoverable from EROT commit `1d3ca9b` under
+`benchmarks/`; source revisions are pinned above and in the provenance record.
+Reproducing the historical audit requires those separate sources and their
+optional dependencies. Current EROT correctness is covered by independent
+reference tests; the recorded historical failures below are not expected
+failures hidden in the active test suite.
 
 ## Observed outcomes
 

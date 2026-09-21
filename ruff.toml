@@ -3,10 +3,6 @@ line-length = 88
 indent-width = 4
 src = ["src"]
 extend-exclude = [
-    "archive",
-    "numerical-gradient-flows",
-    "QOTLib",
-    "SDP-Simulation",
     ".serena",
     ".superpowers",
     ".worktrees",

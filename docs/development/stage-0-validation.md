@@ -1,5 +1,9 @@
 # Stage 0 validation record
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 Date: 2026-09-21. Base revision:
 `424c4ede55f67aa805c4f7914133a5a7bc1b9155`.
 Implementation branch: `chore/stage-0-cleanup`.

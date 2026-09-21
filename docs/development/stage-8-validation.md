@@ -1,5 +1,9 @@
 # Stage 8 release validation
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 The local release candidate is EROT0.2.0 on `chore/stage-0-cleanup` in the isolated
 worktree. No remote branch, package index or release has been published or
 merged. The original main checkout and reference repositories remain intact.
@@ -119,11 +123,11 @@ current source and their installed copies, and inspected the minimum/current
 suite and installed-smoke logs. All 51 current Python package files are present
 byte-for-byte in both wheel flavors.
 
-One minor follow-up is deferred: add an automated assertion that wheel `Version`
-equals authoritative `pyproject.toml`, rather than only comparing installed
-metadata with itself. Current direct/rebuilt wheel metadata and sdist metadata
-were explicitly checked against `pyproject.toml` and all equal 0.2.0. This is a
-future stale-artifact regression guard, not a current artifact defect.
+At the initial release review, a minor follow-up was identified: assert that
+wheel `Version` equals authoritative `pyproject.toml`, rather than comparing
+installed metadata with itself. This was subsequently implemented during
+cleanup after removing stale metadata exposed a hard-coded0.1.0 API test. Current direct/rebuilt wheel metadata and sdist metadata
+were explicitly checked against `pyproject.toml` and all equal 0.2.0. The source API and both wheel paths now enforce the authoritative version.
 
 Review rulings:
 

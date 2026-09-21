@@ -14,8 +14,9 @@ quantum components use Apache-2.0 with distribution metadata MIT AND Apache-2.0.
 The original EROT checkout was on `main` with no tracked modifications.
 Its local `.serena/`, `numerical-gradient-flows/`, `QOTLib/`,
 `SDP-Simulation/`, and planning documents were untracked.
-Implementation uses the `chore/stage-0-cleanup` branch in an isolated worktree.
-The original flow and QOTLib checkouts were clean and remain in place.
+Implementation was developed on `chore/stage-0-cleanup` in an isolated worktree.
+The clean original flow and QOTLib checkouts were removed locally during the
+subsequent user-requested cleanup, together with SDPLab.
 QOTLib's Git root is `QOTLib/QOTLib`; its recorded origin is
 `git@github.com:Pavlo3P/QOTLib.git`. YACHT's supplied origin is
 `git@github.com:ubraket513/YACHT.git`.
@@ -26,15 +27,16 @@ question raised during planning is resolved by that confirmation. When source
 is adapted, record its original path, revision, authorship, destination,
 modifications, and applicable license/NOTICE material alongside the adaptation.
 Do not represent future Apache-2.0-derived files as solely EROT-authored MIT code.
-This record does not modify the reference repositories or their histories.
+No remote reference repository was modified; the local reference checkouts
+and their nested Git storage were subsequently deleted at the user’s request.
 
 The historical gradient-flow `pyproject.toml` contains template MIT metadata
 and placeholder author details. For the planned adaptation, the user's explicit
 Apache-2.0 confirmation is the recorded licensing instruction; the original
-metadata is preserved unchanged and is not silently copied into EROT.
+metadata was not silently copied into EROT.
 
 Historical EROT output paths, hashes, and destinations are recorded in
-[the archive manifest](../../archive/manifest.json). Keep the original revision
+the archive manifest (historical record at commit `1d3ca9b`). Keep the original revision
 and the migration commits so both original and reorganized content remain
 recoverable.
 
@@ -67,7 +69,7 @@ PDHG with the actual coupled operator norm, and explicit feasibility and
 stationarity termination. Entropy prox uses a newly implemented log-coordinate
 root solve instead of the historical overflow-prone Lambert-W expression.
 Functionals use explicit nonnegative cell masses and volume-aware entropy.
-The original checkout remains unchanged. QOTLib adaptation and its attribution are recorded in the next section.
+The original checkout was not modified before its later deletion. QOTLib adaptation and its attribution are recorded in the next section.
 
 ## Stage 3Q operator adoption
 

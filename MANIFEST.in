@@ -12,14 +12,16 @@ include NOTICE
 include CONTRIBUTING.md
 include CHANGELOG.md
 include ruff.toml
-prune archive
-prune numerical-gradient-flows
-prune QOTLib
-prune SDP-Simulation
 prune .serena
 prune .superpowers
+prune .codex
+prune .agents
+prune docs/superpowers
 prune .worktrees
 prune benchmark-results
 prune results
 prune checkpoints
-global-exclude __pycache__ *.py[cod]
+prune logs
+prune artifacts
+prune test-results
+global-exclude __pycache__ *.py[cod] *.log

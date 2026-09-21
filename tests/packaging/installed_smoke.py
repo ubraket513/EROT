@@ -17,7 +17,6 @@ import jax.numpy as jnp
 import numpy as np
 
 import erot
-import erot.experimental.classical
 from erot.flows import Quadratic, initialize_flow, run_flow_chunk
 from erot.geometry.pointcloud import PointCloudGeometry
 from erot.io import load_result

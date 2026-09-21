@@ -1,5 +1,16 @@
 # Changelog
 
+## Repository cleanup after integration
+
+- Remove local SDPLab, original QOTLib/gradient-flow checkouts, archived demo
+  data, unused experimental solvers and one-time legacy audit tools.
+- Remove redundant experiment script wrappers, completed task-plan scaffolding
+  and the unconfigured labeler workflow; retain active CLI commands and CI.
+- Consolidate architecture documentation into conventional docs directories.
+- Keep license notices, pinned provenance, numerical tests and HPC validation tools.
+- Remove stale package metadata and check source/wheel versions against
+  `pyproject.toml`, replacing a leftover hard-coded0.1.0 test expectation.
+
 ## 0.2.0 — integrated research release (unpublished)
 
 - Adopt a src layout, isolated wheel/sdist checks, reference/integration tests,

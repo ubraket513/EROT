@@ -22,9 +22,8 @@ work. A prepared test or launch script is not a validated hardware combination.
 
 No quantum gradient flow, distributed PDHG, distributed quantum eigensolver,
 chordal equivalence, low-rank entropy approximation, separable-grid metric, or
-end-to-end differentiable solve is advertised. The historical
-`erot.experimental.classical` module is retained for compatibility, not promoted
-by tests of the new solver paths.
+end-to-end differentiable solve is advertised. The unsupported historical `erot.experimental.classical` module was removed
+during cleanup; use the validated public methods.
 
 ## Runtime and platform policy
 

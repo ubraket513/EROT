@@ -84,7 +84,7 @@ GPU counts, CPU affinity/thread budgets, memory, node counts, interconnect,
 accounts, partitions, and QoS will be allocation/profile settings rather than
 library constants. Experimental distributed solves have CPU correctness evidence; actual GPU and
 cluster gates remain open. No custom native kernel is selected;
-see the [architecture](superpowers/specs/2026-09-21-erot-flows-hpc-design.md).
+see the [architecture](architecture/design.md).
 
 ## Compatibility and release evidence
 

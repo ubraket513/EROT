@@ -149,13 +149,14 @@ ruff format --check src tests benchmarks
 
 See [contributing](CONTRIBUTING.md), [distribution checks](docs/development.md),
 and [the repository map](docs/development/repository-map.md).
-Historical demo outputs and the old notebook are preserved in
-[`archive/`](archive/README.md), with a hash manifest, and excluded from
-distributions. Local reference repositories are not installation requirements.
+Historical demos, unused experimental solvers, original source checkouts and
+SDPLab were removed during repository cleanup. Integrated source attribution
+remains in [NOTICE](NOTICE) and [provenance](docs/architecture/source-provenance.md).
+Earlier EROT files are recoverable from Git history.
 
 The staged integration targets Hopper-or-newer GPUs with configurable cluster
-resources and a CPU reference path. See [the roadmap](docs/superpowers/plans/2026-09-21-erot-flows-hpc-roadmap.md)
+resources and a CPU reference path. See [the roadmap](docs/development/roadmap.md)
 for implementation evidence and unexecuted hardware gates. See
 [the changelog](CHANGELOG.md) for the local, unpublished 0.2 release. The original
 EROT code retains MIT terms; adapted flow/QOTLib components use Apache-2.0, as
-recorded in [NOTICE](NOTICE). SDPLab is independent and is not a dependency.
+recorded in [NOTICE](NOTICE). SDPLab is not included and is not a dependency.

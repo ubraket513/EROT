@@ -27,7 +27,17 @@ pip-delete-this-directory.txt
 /.superpowers/
 /.worktrees/
 
-# Independent reference repositories; never vendor their nested Git histories
-/numerical-gradient-flows/
-/QOTLib/
-/SDP-Simulation/
+# Local AI-agent instructions, plans and session state
+/.codex/
+/.agents/
+/AGENTS.md
+/CODEX.md
+/docs/superpowers/
+
+# Generated logs and workflow reports
+*.log
+/logs/
+/artifacts/
+/test-results/
+/junit.xml
+/pytest-report.xml

@@ -1,5 +1,9 @@
 # Stage 7 validation: native decision and measurement tools
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 The current decision is [JAX with no selected native component](../performance/native-decision.md).
 This follows the roadmap's explicit no-native outcome. No measured GPU fraction,
 native full-solve speedup or isolated GPU peak-memory reduction is claimed.

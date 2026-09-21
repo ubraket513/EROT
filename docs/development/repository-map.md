@@ -1,39 +1,29 @@
 # Repository map
 
-EROT is the independently installable numerical library. A fresh contributor
-needs only this repository and its declared development dependencies.
+EROT is one independently installable library at the repository root. No nested
+source checkout, archived demo dataset or separate SDP project is required.
 
 | Path | Purpose |
 |---|---|
-| `src/erot/` | Public API, numerical implementation, CLI, experimental modules |
-| `tests/unit/` | Existing API/algebra tests, including marked independent references |
-| `tests/integration/` | CLI and data workflow checks with temporary outputs |
-| `tests/gpu/` | Explicitly GPU-dependent checks |
-| `tests/packaging/` | Distribution-content and installed-package guarantees |
-| `benchmarks/` | Repository tools for reproducible measurements |
-| `docs/` | User migration, architecture, contributor, and staged implementation records |
-| `archive/legacy-erot/` | Byte-preserved historical demonstrations and generated outputs |
-| `archive/manifest.json` | Original paths, destinations, hashes, sizes, and source revision |
+| `src/erot/` | Supported API/CLI, solvers, geometry, flows, operators and runtime |
+| `tests/unit/`, `tests/reference/` | Behavioral checks and independent numerical oracles |
+| `tests/integration/` | CLI, worker, restart and runtime checks |
+| `tests/distributed/`, `tests/gpu/` | Distributed subprocess probes and hardware-dependent checks |
+| `tests/packaging/` | Artifact contents and installed-package smoke checks |
+| `benchmarks/` | Active correctness-aware performance and hardware tools |
+| `examples/` | Runnable gradient-flow and quantum examples |
+| `experiments/configs/` | Reproducible workloads for installed `erot-run`/`erot-launch` commands |
+| `hpc/` | Configurable launch templates and allocation profiles |
+| `requirements/` | Base-minimum and experimental distributed CPU environments |
+| `docs/` | Numerical contracts, support, architecture, migration and validation evidence |
 
-Independent numerical references live under `tests/reference/`; fresh-process
-distributed probes under `tests/distributed/`. Active solver, geometry, flow,
-operator and runtime modules live under `src/erot/`. `experiments/configs/`
-contains reproducible workloads; `hpc/` holds configurable launch templates,
-and `requirements/` distinguishes base-minimum and experimental distributed
-CPU runtimes. See the [support matrix](../support-matrix.md).
+Generated outputs, logs, local AI-agent instructions/plans, environments and
+tool caches are ignored. Maintained documentation and CI definitions stay tracked. Completed detailed
+task plans, legacy audit tools, archived demos and unused experimental solvers
+are available in EROT Git history before cleanup. Original QOTLib,
+numerical-gradient-flows and SDPLab local checkouts were deleted as requested;
+source revisions and required attribution remain in
+[provenance](../architecture/source-provenance.md) and [NOTICE](../../NOTICE).
 
-Optional local checkouts `numerical-gradient-flows/`, `QOTLib/`, and
-`SDP-Simulation/` are ignored by the parent repository and excluded from
-distributions. They are not Git submodules or runtime dependencies.
-Their original locations and histories are preserved. Future historical audit
-tools must accept an explicit source path; ordinary EROT tests must not depend
-on these checkouts. SDPLab stays independent.
-
-Local environments, Serena/worktree state, benchmark reports, and generated
-checkpoints/results are ignored. Intentional small fixtures remain trackable.
-The archive contains historical inputs and outputs, not active test fixtures;
-it is excluded from both wheel and source distributions.
-
-See [source provenance](../architecture/source-provenance.md),
-[contributor instructions](../../CONTRIBUTING.md), and
-[the cleanup plan](../superpowers/plans/2026-09-21-erot-stage-0-cleanup.md).
+See [contributing](../../CONTRIBUTING.md), [support](../support-matrix.md),
+and [future work](roadmap.md).

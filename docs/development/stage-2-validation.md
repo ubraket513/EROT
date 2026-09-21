@@ -1,5 +1,9 @@
 # Stage 2 verification
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 The pure Sinkhorn API, distinct warm-start/resume state, explicit plan
 materialization and full quantum Dykstra state are implemented. Existing dense
 API signatures and CLI behavior remain. See

@@ -5,20 +5,15 @@ The read-only source is QOTLib revision
 reuse rights for this checkout; attribution remains required during adaptation.
 No QOTLib implementation has been added to the EROT runtime in this stage.
 
-Run the audit in an isolated environment with EROT's reference dependencies,
-Optax, and NetworkX installed:
+## Historical reproduction
 
-```bash
-PYTHONDONTWRITEBYTECODE=1 JAX_PLATFORMS=cpu \
-  .venv-legacy-audit/bin/python benchmarks/audit_qotlib.py \
-  --source-path /path/to/QOTLib \
-  --output benchmark-results/stage-1/qotlib-audit.json
-```
-
-The supplied path must contain `qotlib/`. The audit suppresses bytecode writes,
-records the source revision, and returns nonzero for historical mismatches or
-errors. These outcomes are evidence, not failing EROT CI requirements. The
-recorded run used Python 3.12, JAX 0.11.2, NumPy 2.5.3 and CPU execution.
+The one-time audit scripts and original local checkouts were removed after
+integration. The scripts are recoverable from EROT commit `1d3ca9b` under
+`benchmarks/`; source revisions are pinned above and in the provenance record.
+Reproducing the historical audit requires those separate sources and their
+optional dependencies. Current EROT correctness is covered by independent
+reference tests; the recorded historical failures below are not expected
+failures hidden in the active test suite.
 
 ## Operator and entropy evidence
 

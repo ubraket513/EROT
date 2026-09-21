@@ -1,5 +1,9 @@
 # Stage 6 distributed software verification
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 The experimental row-partitioned implicit Sinkhorn path now has pure collective
 state/diagnostics, pre-device process initialization, rank-local deterministic
 inputs, complete distributed checkpoints, an installed driver and configurable

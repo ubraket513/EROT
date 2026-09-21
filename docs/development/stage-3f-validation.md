@@ -1,5 +1,9 @@
 # Stage 3F verification
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 Gradient flows now use the shared transport core with explicit accepted physical
 time, complete backend continuation state and selective snapshots. Independent
 CVXPY references cover both unregularized PDHG JKO and finite-epsilon JKO with

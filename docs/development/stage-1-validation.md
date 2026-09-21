@@ -1,5 +1,9 @@
 # Stage 1 evidence and limits
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 The baseline stage adds reference tests, audit/measurement tools and documents.
 It does not change any EROT solver formula. Stage 0 source/artifact provenance
 and isolated-install evidence remain applicable; the new runtime source tree is

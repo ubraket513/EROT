@@ -5,6 +5,7 @@ from __future__ import annotations
 import configparser
 import os
 import tarfile
+import tomllib
 import zipfile
 from email.parser import Parser
 from pathlib import Path, PurePosixPath
@@ -56,6 +57,10 @@ def test_wheel_contains_only_package_and_distribution_metadata(wheel_path) -> No
                 )
             ).decode()
         )
+    project = Path(__file__).resolve().parents[2] / "pyproject.toml"
+    assert (
+        metadata["Version"] == tomllib.loads(project.read_text())["project"]["version"]
+    )
     assert metadata["License-Expression"] == "MIT AND Apache-2.0"
     assert metadata["Requires-Python"] == ">=3.11"
     assert dict(scripts["console_scripts"]) == {
@@ -83,9 +88,8 @@ def test_wheel_contains_only_package_and_distribution_metadata(wheel_path) -> No
         "erot/launcher.py",
         "erot/slurm.py",
         "erot/distributed.py",
-        "erot/experimental/__init__.py",
-        "erot/experimental/classical.py",
     } <= names
+    assert not any(name.startswith("erot/experimental/") for name in names)
     for name in names:
         first = PurePosixPath(name).parts[0]
         assert first == "erot" or first.endswith(".dist-info"), name
@@ -95,7 +99,9 @@ def test_wheel_contains_only_package_and_distribution_metadata(wheel_path) -> No
     )
     assert any(name.endswith(".dist-info/licenses/NOTICE") for name in names)
     assert any(name.endswith(".dist-info/entry_points.txt") for name in names)
-    assert not any(name.endswith((".pt", ".png", ".ipynb", ".pyc")) for name in names)
+    assert not any(
+        name.endswith((".pt", ".png", ".ipynb", ".pyc", ".log")) for name in names
+    )
 
 
 def test_sdist_excludes_local_repositories_and_generated_data(
@@ -129,7 +135,6 @@ def test_sdist_excludes_local_repositories_and_generated_data(
         "experiments/configs/distributed-classical.json",
         "requirements/distributed-cpu.txt",
         "docs/performance/native-decision.md",
-        "src/erot/experimental/classical.py",
         "tests/unit/test_api.py",
         "tests/packaging/installed_smoke.py",
     } <= names
@@ -141,6 +146,12 @@ def test_sdist_excludes_local_repositories_and_generated_data(
         ".git",
         ".serena",
         ".superpowers",
+        ".codex",
+        ".agents",
+        "superpowers",
+        "logs",
+        "artifacts",
+        "test-results",
         ".worktrees",
         "benchmark-results",
         "results",
@@ -151,4 +162,4 @@ def test_sdist_excludes_local_repositories_and_generated_data(
         parts = PurePosixPath(name).parts
         assert not forbidden.intersection(parts), name
         assert not any(part.startswith(".venv") for part in parts), name
-        assert not name.endswith((".pt", ".png", ".ipynb", ".pyc")), name
+        assert not name.endswith((".pt", ".png", ".ipynb", ".pyc", ".log")), name

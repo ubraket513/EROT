@@ -1,5 +1,9 @@
 # Stage 3Q verification
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 Q1/Q2 are implemented as dense bipartite operators and a trace-one entropy-QOT
 dual solver. Complex unequal-dimension traces, Hilbert-Schmidt adjoints and
 rank-one product traces match independent index algebra. Rank-deficient

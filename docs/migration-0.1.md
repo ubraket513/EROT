@@ -40,6 +40,7 @@ Old: separate output directory with plots and tensor dictionaries
 New: one result.npz; run `erot plot result.npz --output coupling.png` explicitly
 ```
 
-The former gradient-descent, fixed-point, and Nesterov kernels are available
-only from `erot.experimental` and carry no compatibility or convergence
-guarantees.
+The unsupported gradient-descent, fixed-point, and Nesterov implementations
+formerly under `erot.experimental` were removed during repository cleanup.
+Use the supported `erot.solve` methods; historical implementations remain in
+Git history before the cleanup commit.

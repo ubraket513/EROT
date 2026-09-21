@@ -41,15 +41,9 @@ implementations. First-call measurements include compilation and execution,
 but not subprocess startup.
 
 See [the measurement protocol](../docs/performance/baseline-protocol.md).
-Historical characterization tools are separate from performance winners:
-
-```bash
-python benchmarks/audit_legacy_flow.py --source-path /path/to/numerical-gradient-flows --output benchmark-results/legacy-flow.json
-```
-
-This audit requires its own environment with the historical dependencies.
-It exits nonzero for mismatches/errors/unavailable checks and retains a JSON
-report. No legacy repository or optimizer dependency enters the base package.
+Historical one-time source audits are recorded in the numerical audit documents;
+their removed scripts are available from Git commit `1d3ca9b`. Active benchmark
+tools require only the integrated EROT package and their documented dependencies.
 
 Hardware inventory and isolated quantum projection:
 

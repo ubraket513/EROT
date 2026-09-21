@@ -1,5 +1,9 @@
 # Stage 5 experiment runtime verification
 
+Historical integration record, captured before the subsequent repository cleanup.
+See [the current repository map](repository-map.md) for the retained layout;
+removed files and detailed task plans remain in EROT Git history.
+
 The installed runtime now supports reproducible classical, quantum and flow
 workers, atomic complete-state checkpoints, independent resource-isolated
 processes and configurable Slurm arrays. Historical repositories and SDPLab

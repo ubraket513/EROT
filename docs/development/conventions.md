@@ -8,7 +8,7 @@ Reference supplied by the user: `git@github.com:ubraket513/YACHT.git`.
 
 Inspected revision: [`48c86a09dee58f693f1223eb2b1a77764a62d9bd`](https://github.com/ubraket513/YACHT/tree/48c86a09dee58f693f1223eb2b1a77764a62d9bd), commit dated 2026-04-26. A temporary local clone was inspected through Serena and direct configuration reads. No reference project dependencies were installed and its test suite was not run. This is a record of visible engineering patterns, not certification of the reference repository's release quality.
 
-This record supplements the [EROT architecture](2026-09-21-erot-flows-hpc-design.md) and is implemented through the [delivery roadmap](../plans/2026-09-21-erot-flows-hpc-roadmap.md), beginning with [Stage 0 cleanup](../plans/2026-09-21-erot-stage-0-cleanup.md). QOTLib's algorithm candidates follow these engineering conventions; see the [separate adoption assessment](2026-09-21-qotlib-adoption.md).
+This record supplements the [EROT architecture](../architecture/design.md) and is implemented through the [delivery roadmap](roadmap.md), beginning with Stage 0 cleanup (historical record at commit `1d3ca9b`). QOTLib's algorithm candidates follow these engineering conventions; see the [separate adoption assessment](../architecture/qotlib-adoption.md).
 
 ## Evidence and adoption decisions
 

@@ -2,16 +2,16 @@
 
 License update (2026-09-21): the user confirmed Apache-2.0 for both QOTLib and numerical-gradient-flows. Earlier missing-license observations below describe the inspected trees, not an outstanding permission question. Preserve attribution and applicable notices when adapting source.
 
-Status: the selected Stage0–8 integration software and local release validation are complete and independently reviewed. Historical inspection observations below are preserved. See the [support matrix](../../support-matrix.md) and stage validation records for current evidence; actual GPU/Slurm gates remain unexecuted.
+Status: the selected Stage0–8 integration software and local release validation are complete and independently reviewed. Historical inspection observations below are preserved. See the [support matrix](../support-matrix.md) and stage validation records for current evidence; actual GPU/Slurm gates remain unexecuted.
 
 This specification records the direction agreed in the discussion on 2026-09-21. The target includes both large individual solves and many independent experiments. The latest hardware direction is NVIDIA Hopper or newer, with configurable resources for an openly shared library; it supersedes the earlier fixed GPU/CPU allocation. The user selected `ubraket513/YACHT` as the engineering reference, added QOTLib as an algorithm source to assess, and requested repository cleanup and restructuring before numerical integration.
 
-Read the [delivery roadmap](../plans/2026-09-21-erot-flows-hpc-roadmap.md) for dependencies, the [YACHT adoption record](2026-09-21-yacht-conventions.md) for engineering conventions, the [QOTLib assessment](2026-09-21-qotlib-adoption.md) for algorithm decisions, and the [Stage 0 cleanup plan](../plans/2026-09-21-erot-stage-0-cleanup.md) for the first executable work package. The [Stage 1 baseline plan](../plans/2026-09-21-erot-stage-1-baselines.md) follows the structural cleanup.
+Read the [delivery roadmap](../development/roadmap.md) for dependencies, the [YACHT adoption record](../development/conventions.md) for engineering conventions, the [QOTLib assessment](qotlib-adoption.md) for algorithm decisions, and the Stage 0 cleanup plan (historical record at commit `1d3ca9b`) for the first executable work package. The Stage 1 baseline plan (historical record at commit `1d3ca9b`) follows the structural cleanup.
 
 ## 1. Scope and constraints
 
-- Merge reusable numerical-gradient-flows functionality into the EROT distribution; keep SDPLab as the independent second repository.
-- Do not modify or relocate `SDP-Simulation/` as part of this plan.
+- Integrate reusable numerical-gradient-flows functionality into EROT; exclude SDPLab and generic SDP drivers.
+- The subsequent user-requested cleanup deletes the original local SDPLab, QOTLib and gradient-flow checkouts; they are not package dependencies.
 - Target NVIDIA Hopper or newer for GPU optimization; retain a CPU installation and numerical reference path. Publish tested architecture/runtime combinations rather than promising support for every future GPU.
 - Make GPU count, CPUs per task, memory, node count, device links, and scheduler settings configurable. The earlier one-/two-GPU, 16-core allocation is an example profile, not a library limit or default entitlement.
 - Preserve the existing `erot.solve`, `SolverConfig`, CLI, and dense result behavior during the additive migration.
@@ -21,12 +21,12 @@ Read the [delivery roadmap](../plans/2026-09-21-erot-flows-hpc-roadmap.md) for d
 - Keep JAX and NumPy as the mandatory numerical dependencies. Plotting, experiment optimization, independent reference solvers, and native extensions remain optional.
 - Support float64/complex128 reference computations and separately validated float32/complex64 execution; do not silently reduce precision.
 - Use the same mathematical objective and accuracy requirements for every performance comparison.
-- Keep original source provenance and attribution. Preserve the nested gradient-flow and QOTLib histories and local changes; establish reuse rights before importing their source into a public distribution.
+- Keep original source provenance and attribution. Record the original gradient-flow and QOTLib revisions and source reuse rights before adapting code. Local source storage was removed after integration at the user’s request.
 - Adapt selected QOT algorithms to EROT's contracts and style. Do not vendor QOTLib's entire backend framework, experimental scripts, dependency list, or generic SDP drivers.
 
 Exact GPU variants and usable memory, peer links, interconnect, node count, host RAM, CPU topology, and largest required problems remain unspecified. Stage 1 records these per allocation. Stage 0 needs a CPU environment and before/after compatibility checks; it does not wait for a cluster benchmark campaign. Hardware-specific claims depend on measured evidence.
 
-## 2. Evidence from the current checkout
+## 2. Historical pre-integration checkout evidence
 
 The scan used Serena symbol overviews, symbol bodies, and references. These are observations, not benchmark results.
 
@@ -118,7 +118,7 @@ flowchart TD
     V -. measured option .-> N
 ```
 
-Stage 0 first inventories tracked inputs, generated outputs, local repositories, and existing compatibility checks; then moves the current package to `src/erot/`. Keep `erot.classical` and `erot.quantum` import compatibility during extraction. Introduce small `src/erot/solvers/`, `src/erot/geometry/`, `src/erot/flows/`, and `src/erot/runtime/` modules only as their features arrive. Separate layout, formatting, and numerical changes into reviewable diffs. Preserve generated historical artifacts with a manifest before removing them from active demo/test paths.
+Stage 0 first inventories tracked inputs, generated outputs, local repositories, and existing compatibility checks; then moves the current package to `src/erot/`. Keep `erot.classical` and `erot.quantum` import compatibility during extraction. Introduce small `src/erot/solvers/`, `src/erot/geometry/`, `src/erot/flows/`, and `src/erot/runtime/` modules only as their features arrive. Separate layout, formatting, and numerical changes into reviewable diffs. Historical artifacts were inventoried during integration and later removed during cleanup; their manifest and earlier EROT files remain in Git history.
 
 The intended repository layout is:
 
@@ -130,7 +130,6 @@ tests/integration/   Installed CLI workflows and restart behavior
 tests/gpu/           GPU precision and placement
 tests/distributed/   Collective correctness and shard equivalence
 tests/data/          Small deterministic fixtures only
-archive/             Preserved historical artifacts; excluded from distributions
 benchmarks/          Measurement tools and case definitions
 experiments/         Reproducible scientific studies
 hpc/                 Cluster profiles and launch templates

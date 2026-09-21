@@ -40,4 +40,4 @@ importing source. See [source provenance](docs/architecture/source-provenance.md
 
 See [development and release checks](docs/development.md),
 [repository layout](docs/development/repository-map.md), and
-[the implementation roadmap](docs/superpowers/plans/2026-09-21-erot-flows-hpc-roadmap.md).
+[the implementation roadmap](docs/development/roadmap.md).

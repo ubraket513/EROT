@@ -2,9 +2,9 @@
 
 EROT now contains the selected gradient-flow and quantum-entropy capabilities.
 Install one package; neither the historical numerical-gradient-flows checkout
-nor QOTLib is a runtime dependency. SDPLab stays independent. Original source
-checkouts and histories are preserved, and no remote repository was moved,
-merged, deleted or published by this migration.
+nor QOTLib is a runtime dependency. SDPLab and the original source checkouts were deleted locally at the user's
+request after integration. No remote repository was deleted or changed.
+Attribution and pinned source revisions remain recorded below.
 
 Existing `import erot`, `erot.solve`, `SolverConfig`, result fields, CLI defaults
 and `.npz` result archives remain available. The `src/erot` layout requires an
@@ -89,9 +89,11 @@ MIT terms remain in [LICENSE.txt](../LICENSE.txt). Distribution metadata records
 [source provenance](architecture/source-provenance.md) for paths and changes.
 YACHT inspired packaging/testing/style choices; no YACHT code was copied.
 
-Historical checkouts, archives and generated outputs are excluded from release
-artifacts. The retained `erot.experimental.classical` module remains available
-but experimental. No unaccounted source deletion is needed for this release.
+Historical checkouts, archived demo data, one-time source audit tools and the
+unsupported `erot.experimental.classical` solvers were removed during cleanup.
+The latter had no supported API/CLI consumer. Use the validated classical
+methods through `erot.solve`. Previous EROT artifacts and audit tools remain
+available from Git commit `1d3ca9b`; local nested repository storage was deleted.
 Use [experiment configurations](../experiments/configs),
 [restart guidance](numerics/experiments.md), and the
 [support matrix](support-matrix.md) to choose a validated execution path.
